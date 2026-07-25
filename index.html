@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Americano Coffee Menu</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 16px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #e2a872;
+            margin-bottom: 4px;
+        }
+        .subtitle {
+            font-size: 13px;
+            color: #aaaaaa;
+        }
+        .card {
+            background: #2b2b2b;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 24px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .card-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        .stamps-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        .stamp {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px dashed #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            background: #222;
+        }
+        .stamp.active {
+            border: 2px solid #e2a872;
+            background: #3a2b20;
+        }
+        .progress-text {
+            font-size: 12px;
+            color: #ccc;
+        }
+        .menu-section-title {
+            font-size: 16px;
+            font-weight: bold;
+            border-bottom: 2px solid #e2a872;
+            padding-bottom: 6px;
+            margin-bottom: 14px;
+        }
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #333;
+        }
+        .item-name {
+            font-size: 15px;
+            font-weight: 500;
+        }
+        .item-price {
+            color: #e2a872;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="title">☕ AMERICANO</div>
+        <div class="subtitle">3 филиала • Каждый 7-й кофе бесплатно</div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Ваша карта лояльности</div>
+        <div class="stamps-container" id="stampsBox">
+            <div class="stamp" id="s1">⚪</div>
+            <div class="stamp" id="s2">⚪</div>
+            <div class="stamp" id="s3">⚪</div>
+            <div class="stamp" id="s4">⚪</div>
+            <div class="stamp" id="s5">⚪</div>
+            <div class="stamp" id="s6">⚪</div>
+        </div>
+        <div class="progress-text" id="progressText">Загрузка данных карты...</div>
+    </div>
+
+    <div class="menu-section-title">📋 Меню напитков</div>
+
+    <div class="menu-item">
+        <div class="item-name">Эспрессо / Доппио</div>
+        <div class="item-price">15 000 сум</div>
+    </div>
+    <div class="menu-item">
+        <div class="item-name">Американо</div>
+        <div class="item-price">18 000 сум</div>
+    </div>
+    <div class="menu-item">
+        <div class="item-name">Капучино</div>
+        <div class="item-price">22 000 сум</div>
+    </div>
+    <div class="menu-item">
+        <div class="item-name">Латте</div>
+        <div class="item-price">24 000 сум</div>
+    </div>
+    <div class="menu-item">
+        <div class="item-name">Фирменный Раф</div>
+        <div class="item-price">28 000 сум</div>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        // Получаем параметры из URL (?stamps=X)
+        const urlParams = new URLSearchParams(window.location.search);
+        const stamps = parseInt(urlParams.get('stamps')) || 0;
+
+        // Расставляем штампы
+        for (let i = 1; i <= 6; i++) {
+            const stampEl = document.getElementById(`s${i}`);
+            if (i <= stamps) {
+                stampEl.classList.add('active');
+                stampEl.innerText = '☕';
+            } else {
+                stampEl.classList.remove('active');
+                stampEl.innerText = '⚪';
+            }
+        }
+
+        // Выводим корректный текст
+        const progressEl = document.getElementById('progressText');
+        if (stamps >= 6) {
+            progressEl.innerHTML = '🎁 <b>У вас есть бесплатный напиток!</b>';
+        } else {
+            progressEl.innerHTML = `Куплено ${stamps} из 6 кофе для получения подарка 🎁`;
+        }
+    </script>
+</body>
+</html>
