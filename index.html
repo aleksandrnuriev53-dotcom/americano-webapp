@@ -18,7 +18,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             margin: 0;
             padding: 16px;
-            padding-bottom: 30px;
+            padding-bottom: 24px;
             position: relative;
             min-height: 100vh;
             overflow-x: hidden;
@@ -61,8 +61,8 @@
         /* --- ШАПКА --- */
         .header {
             text-align: center;
-            margin-bottom: 24px;
-            margin-top: 8px;
+            margin-bottom: 20px;
+            margin-top: 4px;
         }
 
         .title {
@@ -88,7 +88,7 @@
             border: 1px solid rgba(226, 168, 114, 0.25);
             border-radius: 20px;
             padding: 20px;
-            margin-bottom: 28px;
+            margin-bottom: 24px;
             text-align: center;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1);
         }
@@ -143,17 +143,15 @@
             gap: 8px;
         }
 
-        /* Сетка прямоугольных кнопок категорий */
         .categories-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
-            margin-bottom: 28px;
         }
 
         .category-card {
             position: relative;
-            height: 120px;
+            height: 125px;
             border-radius: 18px;
             overflow: hidden;
             background-size: cover;
@@ -161,18 +159,18 @@
             border: 1px solid rgba(226, 168, 114, 0.2);
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
             cursor: pointer;
-            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+            transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
             display: flex;
             align-items: flex-end;
+            user-select: none;
         }
 
         .category-card:active {
-            transform: scale(0.96);
+            transform: scale(0.95);
             border-color: #e2a872;
             box-shadow: 0 0 15px rgba(226, 168, 114, 0.4);
         }
 
-        /* Затеменение фонового фото для разборчивости текста */
         .category-overlay {
             position: absolute;
             inset: 0;
@@ -188,38 +186,6 @@
             color: #ffffff;
             text-shadow: 0 2px 4px rgba(0,0,0,0.8);
             line-height: 1.2;
-        }
-
-        /* --- СПИСОК НАПИТКОВ --- */
-        .menu-list {
-            background: rgba(35, 30, 26, 0.5);
-            border-radius: 18px;
-            padding: 8px 16px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .menu-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        }
-
-        .menu-item:last-child {
-            border-bottom: none;
-        }
-
-        .item-name {
-            font-size: 15px;
-            font-weight: 500;
-            color: #eae0d5;
-        }
-
-        .item-price {
-            color: #e2a872;
-            font-weight: 700;
-            font-size: 15px;
         }
     </style>
 </head>
@@ -246,58 +212,28 @@
             <div class="progress-text" id="progressText">Загрузка данных карты...</div>
         </div>
 
-        <!-- Категории меню с фотками -->
+        <!-- Категории меню -->
         <div class="section-header">📁 Категории меню</div>
         
         <div class="categories-grid">
-            <!-- Горячие напитки -->
-            <div class="category-card" style="background-image: url('https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=400&auto=format&fit=crop');">
+            <div class="category-card" onclick="selectCategory('🔥 Горячие напитки')" style="background-image: url('https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=400&auto=format&fit=crop');">
                 <div class="category-overlay"></div>
                 <div class="category-title">🔥 Горячие напитки</div>
             </div>
 
-            <!-- Холодные напитки -->
-            <div class="category-card" style="background-image: url('https://images.unsplash.com/photo-1517701604599-bb29b565090c?q=80&w=400&auto=format&fit=crop');">
+            <div class="category-card" onclick="selectCategory('🧊 Холодные напитки')" style="background-image: url('https://images.unsplash.com/photo-1517701604599-bb29b565090c?q=80&w=400&auto=format&fit=crop');">
                 <div class="category-overlay"></div>
                 <div class="category-title">🧊 Холодные напитки</div>
             </div>
 
-            <!-- Лимонады и смузи -->
-            <div class="category-card" style="background-image: url('https://images.unsplash.com/photo-1551024709-8f23befc6f87?q=80&w=400&auto=format&fit=crop');">
+            <div class="category-card" onclick="selectCategory('🍹 Лимонады & Смузи')" style="background-image: url('https://images.unsplash.com/photo-1551024709-8f23befc6f87?q=80&w=400&auto=format&fit=crop');">
                 <div class="category-overlay"></div>
                 <div class="category-title">🍹 Лимонады & Смузи</div>
             </div>
 
-            <!-- Десерты -->
-            <div class="category-card" style="background-image: url('https://images.unsplash.com/photo-1555507036-ab1f4038808a?q=80&w=400&auto=format&fit=crop');">
+            <div class="category-card" onclick="selectCategory('🥐 Десерты & Выпечка')" style="background-image: url('https://images.unsplash.com/photo-1555507036-ab1f4038808a?q=80&w=400&auto=format&fit=crop');">
                 <div class="category-overlay"></div>
                 <div class="category-title">🥐 Десерты & Выпечка</div>
-            </div>
-        </div>
-
-        <!-- Популярные позиции -->
-        <div class="section-header">⭐ Популярное</div>
-
-        <div class="menu-list">
-            <div class="menu-item">
-                <div class="item-name">Эспрессо / Доппио</div>
-                <div class="item-price">15 000 сум</div>
-            </div>
-            <div class="menu-item">
-                <div class="item-name">Американо</div>
-                <div class="item-price">18 000 сум</div>
-            </div>
-            <div class="menu-item">
-                <div class="item-name">Капучино</div>
-                <div class="item-price">22 000 сум</div>
-            </div>
-            <div class="menu-item">
-                <div class="item-name">Латте</div>
-                <div class="item-price">24 000 сум</div>
-            </div>
-            <div class="menu-item">
-                <div class="item-name">Фирменный Раф</div>
-                <div class="item-price">28 000 сум</div>
             </div>
         </div>
     </div>
@@ -322,12 +258,20 @@
             }
         }
 
-        // Выводим корректный текст
+        // Выводим текст лояльности
         const progressEl = document.getElementById('progressText');
         if (stamps >= 6) {
             progressEl.innerHTML = '🎁 <b>У вас есть бесплатный напиток!</b>';
         } else {
             progressEl.innerHTML = `Куплено <b>${stamps} из 6</b> кофе для получения подарка 🎁`;
+        }
+
+        // Обработка клика по категории
+        function selectCategory(categoryName) {
+            if (tg.HapticFeedback) {
+                tg.HapticFeedback.impactOccurred('medium'); // Легкая вибрация при нажатии
+            }
+            tg.sendData(JSON.stringify({ category: categoryName }));
         }
     </script>
 </body>
