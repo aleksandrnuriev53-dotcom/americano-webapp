@@ -506,17 +506,19 @@
             progressEl.innerHTML = `Куплено <b>${stamps} из 6</b> кофе для получения подарка 🎁`;
         }
 
-        // Мгновенное обновление ценника при выборе размера или добавки
+        // Четкая логика пересчета цены на карточке
         function updatePrice(catKey, itemIdx) {
             if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('selectionChanged');
             
             const item = MENU[catKey].items[itemIdx];
             const priceEl = document.getElementById(`price_${catKey}_${itemIdx}`);
             
-            const selectedRadio = document.querySelector(`input[name="size_${catKey}_${itemIdx}"]:checked`);
-            const variantIdx = selectedRadio ? parseInt(selectedRadio.value) : 0;
+            // Находим активную радио-кнопку объема для ЭТОЙ конкретной карточки
+            const checkedRadio = document.querySelector(`input[name="size_${catKey}_${itemIdx}"]:checked`);
+            const variantIdx = checkedRadio ? parseInt(checkedRadio.value) : 0;
             const basePrice = item.variants[variantIdx] ? item.variants[variantIdx].price : item.variants[0].price;
 
+            // Находим выбранную добавку
             const addonSelect = document.getElementById(`addon_${catKey}_${itemIdx}`);
             const selectedAddon = addonSelect ? addonSelect.value : "Без добавки";
             
@@ -525,6 +527,7 @@
                 totalPrice += 5000;
             }
 
+            // Записываем итоговую цену в заголовок карточки
             if (priceEl) {
                 priceEl.innerText = `${totalPrice.toLocaleString('ru-RU')} сум`;
             }
