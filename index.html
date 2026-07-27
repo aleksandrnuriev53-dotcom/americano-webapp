@@ -11,14 +11,13 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* --- ГЛУБОКИЙ ТЕМНЫЙ ФОН И БЕЖЕВОЕ СВЕЧЕНИЕ --- */
         body {
             background-color: #12100e;
             color: #ffffff;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             margin: 0;
             padding: 16px;
-            padding-bottom: 90px;
+            padding-bottom: 100px;
             position: relative;
             min-height: 100vh;
             overflow-x: hidden;
@@ -32,20 +31,7 @@
             transform: translateX(-50%);
             width: 380px;
             height: 380px;
-            background: radial-gradient(circle, rgba(226, 168, 114, 0.22) 0%, rgba(18, 16, 14, 0) 70%);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        body::after {
-            content: '';
-            position: fixed;
-            bottom: -80px;
-            right: -80px;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(190, 130, 80, 0.15) 0%, rgba(18, 16, 14, 0) 70%);
+            background: radial-gradient(circle, rgba(226, 168, 114, 0.2) 0%, rgba(18, 16, 14, 0) 70%);
             border-radius: 50%;
             pointer-events: none;
             z-index: 0;
@@ -56,11 +42,9 @@
             z-index: 1;
         }
 
-        /* --- ШАПКА --- */
         .header {
             text-align: center;
             margin-bottom: 20px;
-            margin-top: 4px;
         }
 
         .title {
@@ -75,7 +59,6 @@
         .subtitle {
             font-size: 13px;
             color: #a09a95;
-            letter-spacing: 0.5px;
         }
 
         /* --- КАРТА ЛОЯЛЬНОСТИ --- */
@@ -85,34 +68,34 @@
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(226, 168, 114, 0.25);
             border-radius: 20px;
-            padding: 20px;
+            padding: 18px;
             margin-bottom: 24px;
             text-align: center;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
         }
 
         .card-title {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
             color: #f1e5d8;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
 
         .stamps-container {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
         }
 
         .stamp {
-            width: 44px;
-            height: 44px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
             border: 2px dashed rgba(226, 168, 114, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: 18px;
             background: rgba(18, 16, 14, 0.6);
             transition: all 0.3s ease;
         }
@@ -121,11 +104,10 @@
             border: 2px solid #e2a872;
             background: radial-gradient(circle, #523b28 0%, #291c13 100%);
             box-shadow: 0 0 12px rgba(226, 168, 114, 0.4);
-            transform: scale(1.05);
         }
 
         .progress-text {
-            font-size: 13px;
+            font-size: 12px;
             color: #c5bbb0;
         }
 
@@ -135,9 +117,6 @@
             font-weight: 700;
             color: #f1e5d8;
             margin-bottom: 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
 
         .categories-grid {
@@ -148,41 +127,33 @@
 
         .category-card {
             position: relative;
-            height: 125px;
-            border-radius: 18px;
+            height: 110px;
+            border-radius: 16px;
             overflow: hidden;
             background-size: cover;
             background-position: center;
             border: 1px solid rgba(226, 168, 114, 0.2);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
             cursor: pointer;
-            transition: transform 0.15s ease, border-color 0.15s ease;
             display: flex;
             align-items: flex-end;
-        }
-
-        .category-card:active {
-            transform: scale(0.95);
-            border-color: #e2a872;
         }
 
         .category-overlay {
             position: absolute;
             inset: 0;
-            background: linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(18, 16, 14, 0.88) 100%);
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(18, 16, 14, 0.9) 100%);
         }
 
         .category-title {
             position: relative;
             z-index: 2;
-            padding: 12px 14px;
+            padding: 10px;
             font-weight: 700;
-            font-size: 15px;
+            font-size: 14px;
             color: #ffffff;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
         }
 
-        /* --- ЭКРАН НАПИТКОВ --- */
+        /* --- СПИСОК НАПИТКОВ --- */
         #drinksView {
             display: none;
         }
@@ -196,21 +167,18 @@
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
             margin-bottom: 16px;
         }
 
         .menu-list {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 14px;
         }
 
         .drink-item {
-            background: rgba(35, 30, 26, 0.7);
-            border: 1px solid rgba(226, 168, 114, 0.15);
+            background: rgba(35, 30, 26, 0.75);
+            border: 1px solid rgba(226, 168, 114, 0.2);
             border-radius: 16px;
             padding: 14px;
             display: flex;
@@ -221,7 +189,7 @@
         .drink-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
         }
 
         .drink-name {
@@ -236,10 +204,42 @@
             color: #e2a872;
         }
 
-        .drink-controls {
+        /* Селектор размеров */
+        .size-selector {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .size-btn {
+            flex: 1;
+            background: rgba(18, 16, 14, 0.6);
+            border: 1px solid rgba(226, 168, 114, 0.2);
+            color: #aaa;
+            padding: 6px;
+            border-radius: 8px;
+            font-size: 11px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .size-btn.active {
+            border-color: #e2a872;
+            color: #ffffff;
+            background: rgba(226, 168, 114, 0.25);
+            font-weight: 600;
+        }
+
+        /* Селектор сиропов и добавок */
+        .addon-select {
+            width: 100%;
+            background: rgba(18, 16, 14, 0.8);
+            border: 1px solid rgba(226, 168, 114, 0.3);
+            color: #f1e5d8;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 12px;
+            outline: none;
             margin-top: 4px;
         }
 
@@ -247,15 +247,17 @@
             background: #e2a872;
             color: #12100e;
             border: none;
-            padding: 8px 16px;
+            padding: 10px;
             border-radius: 10px;
             font-weight: 700;
             font-size: 13px;
             cursor: pointer;
+            margin-top: 6px;
+            width: 100%;
         }
 
         .add-btn:active {
-            transform: scale(0.96);
+            transform: scale(0.98);
         }
     </style>
 </head>
@@ -282,41 +284,49 @@
             <div class="progress-text" id="progressText">Загрузка данных карты...</div>
         </div>
 
-        <!-- ЭКРАН 1: КАТЕГОРИИ -->
+        <!-- ЭКРАН КАТЕГОРИЙ -->
         <div id="categoriesView">
-            <div class="section-header">📁 Выберите категорию</div>
+            <div class="section-header">📁 Меню напитков</div>
             
             <div class="categories-grid">
-                <div class="category-card" onclick="openCategory('hot')" style="background-image: url('https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=400&auto=format&fit=crop');">
+                <div class="category-card" onclick="openCategory('classic')" style="background-image: url('https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=400&auto=format&fit=crop');">
                     <div class="category-overlay"></div>
-                    <div class="category-title">🔥 Горячие напитки</div>
+                    <div class="category-title">☕ Классика</div>
                 </div>
 
-                <div class="category-card" onclick="openCategory('cold')" style="background-image: url('https://images.unsplash.com/photo-1517701604599-bb29b565090c?q=80&w=400&auto=format&fit=crop');">
+                <div class="category-card" onclick="openCategory('iced')" style="background-image: url('https://images.unsplash.com/photo-1517701604599-bb29b565090c?q=80&w=400&auto=format&fit=crop');">
                     <div class="category-overlay"></div>
-                    <div class="category-title">🧊 Холодные напитки</div>
+                    <div class="category-title">🧊 Айс Кофе</div>
                 </div>
 
-                <div class="category-card" onclick="openCategory('smoothies')" style="background-image: url('https://images.unsplash.com/photo-1551024709-8f23befc6f87?q=80&w=400&auto=format&fit=crop');">
+                <div class="category-card" onclick="openCategory('mojito')" style="background-image: url('https://images.unsplash.com/photo-1551024709-8f23befc6f87?q=80&w=400&auto=format&fit=crop');">
                     <div class="category-overlay"></div>
-                    <div class="category-title">🍹 Лимонады & Смузи</div>
+                    <div class="category-title">🍹 Мохито & Лимонады</div>
                 </div>
 
-                <div class="category-card" onclick="openCategory('bakery')" style="background-image: url('https://images.unsplash.com/photo-1555507036-ab1f4038808a?q=80&w=400&auto=format&fit=crop');">
+                <div class="category-card" onclick="openCategory('icetea')" style="background-image: url('https://images.unsplash.com/photo-1556679343-c7306c1976bc?q=80&w=400&auto=format&fit=crop');">
                     <div class="category-overlay"></div>
-                    <div class="category-title">🥐 Десерты & Выпечка</div>
+                    <div class="category-title">🍃 Айс Ти & Коктейли</div>
+                </div>
+
+                <div class="category-card" onclick="openCategory('milkshake')" style="background-image: url('https://images.unsplash.com/photo-1572490122747-3968b75cc699?q=80&w=400&auto=format&fit=crop');">
+                    <div class="category-overlay"></div>
+                    <div class="category-title">🥤 Милкшейки</div>
+                </div>
+
+                <div class="category-card" onclick="openCategory('bubble')" style="background-image: url('https://images.unsplash.com/photo-1558857563-b371033873b8?q=80&w=400&auto=format&fit=crop');">
+                    <div class="category-overlay"></div>
+                    <div class="category-title">🧋 Bubble Tea</div>
                 </div>
             </div>
         </div>
 
-        <!-- ЭКРАН 2: СПИСОК НАПИТКОВ -->
+        <!-- ЭКРАН НАПИТКОВ -->
         <div id="drinksView">
             <button class="back-btn" onclick="showCategories()">← К категориям</button>
-            <div class="section-header" id="categoryTitle">🔥 Горячие напитки</div>
+            <div class="section-header" id="categoryTitle">Загрузка...</div>
             
-            <div class="menu-list" id="drinksList">
-                <!-- Напитки будут подгружаться динамически -->
-            </div>
+            <div class="menu-list" id="drinksList"></div>
         </div>
     </div>
 
@@ -324,41 +334,112 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // База данных напитков по категориям
+        const SYRUPS_AND_ADDONS = [
+            "Без добавки",
+            "✨ Сироп: Ванильный (+5k)",
+            "✨ Сироп: Кокосовый (+5k)",
+            "✨ Сироп: Карамельный (+5k)",
+            "✨ Сироп: Соленая карамель (+5k)",
+            "✨ Сироп: Лесной орех (+5k)",
+            "✨ Сироп: Тоффи (+5k)",
+            "✨ Сироп: Шоколадное печенье (+5k)",
+            "➕ Топпинг (+5k)",
+            "➕ Мята (+5k)",
+            "➕ Лимон (+5k)",
+            "➕ Мёд (+5k)",
+            "➕ Собойница (+5k)"
+        ];
+
+        // Меню с ценами
         const MENU = {
-            hot: {
-                title: '🔥 Горячие напитки',
+            classic: {
+                title: '☕ Классика',
                 items: [
-                    { name: 'Эспрессо', price: 15000, size: '0.2 л' },
-                    { name: 'Американо', price: 18000, size: '0.3 л' },
-                    { name: 'Капучино', price: 22000, size: '0.3 л' },
-                    { name: 'Латте', price: 24000, size: '0.3 л' },
-                    { name: 'Фирменный Раф', price: 28000, size: '0.3 л' }
+                    { name: 'Эспрессо', variants: [{ size: '250 ml', price: 20000 }, { size: '350 ml', price: 25000 }] },
+                    { name: 'Американо', variants: [{ size: '250 ml', price: 20000 }, { size: '350 ml', price: 25000 }] },
+                    { name: 'Капучинно', variants: [{ size: '250 ml', price: 20000 }, { size: '350 ml', price: 25000 }, { size: '450 ml', price: 30000 }] },
+                    { name: 'Латте', variants: [{ size: '250 ml', price: 20000 }, { size: '350 ml', price: 25000 }, { size: '450 ml', price: 30000 }] },
+                    { name: 'Флет Уайт', variants: [{ size: '350 ml', price: 30000 }] },
+                    { name: 'Мокачинно', variants: [{ size: '250 ml', price: 25000 }, { size: '350 ml', price: 30000 }, { size: '450 ml', price: 40000 }] },
+                    { name: 'Макиатто', variants: [{ size: '250 ml', price: 25000 }, { size: '350 ml', price: 30000 }, { size: '450 ml', price: 40000 }] },
+                    { name: 'Раф Сливочный', variants: [{ size: '250 ml', price: 25000 }, { size: '350 ml', price: 35000 }, { size: '450 ml', price: 45000 }] },
+                    { name: 'Какао', variants: [{ size: '250 ml', price: 20000 }, { size: '350 ml', price: 25000 }, { size: '450 ml', price: 30000 }] },
+                    { name: 'Горячий Шоколад', variants: [{ size: '250 ml', price: 20000 }, { size: '350 ml', price: 25000 }, { size: '450 ml', price: 30000 }] },
+                    { name: 'Кофе на безлактозном молоке', variants: [{ size: '250 ml', price: 25000 }, { size: '350 ml', price: 30000 }, { size: '450 ml', price: 40000 }] }
                 ]
             },
-            cold: {
-                title: '🧊 Холодные напитки',
+            iced: {
+                title: '🧊 Айс Кофе',
                 items: [
-                    { name: 'Айс Айс Латте', price: 26000, size: '0.4 л' },
-                    { name: 'Айс Американо', price: 20000, size: '0.4 л' },
-                    { name: 'Бамбл Кофе', price: 30000, size: '0.4 л' },
-                    { name: 'Эспрессо Тоник', price: 28000, size: '0.4 л' }
+                    { name: 'Фраппе Oreo', variants: [{ size: '350 ml', price: 35000 }, { size: '450 ml', price: 45000 }] },
+                    { name: 'Фраппе Chocolate', variants: [{ size: '350 ml', price: 35000 }, { size: '450 ml', price: 45000 }] },
+                    { name: 'Фраппе Vanilla', variants: [{ size: '350 ml', price: 35000 }, { size: '450 ml', price: 45000 }] },
+                    { name: 'Эспрессо - Тоник', variants: [{ size: '350 ml', price: 35000 }, { size: '450 ml', price: 45000 }] },
+                    { name: 'Соленая Карамель Латте', variants: [{ size: '350 ml', price: 30000 }, { size: '450 ml', price: 40000 }] },
+                    { name: 'Фисташковый Соблазн Латте', variants: [{ size: '350 ml', price: 30000 }, { size: '450 ml', price: 40000 }] },
+                    { name: 'Айс Американо', variants: [{ size: '350 ml', price: 25000 }, { size: '450 ml', price: 30000 }] },
+                    { name: 'Айс Капучино', variants: [{ size: '350 ml', price: 25000 }, { size: '450 ml', price: 35000 }] },
+                    { name: 'Айс Латте', variants: [{ size: '350 ml', price: 25000 }, { size: '450 ml', price: 35000 }] },
+                    { name: 'Айс Флет Уайт', variants: [{ size: '350 ml', price: 35000 }] },
+                    { name: 'Айс Латте Кокосовый', variants: [{ size: '350 ml', price: 35000 }, { size: '450 ml', price: 45000 }] },
+                    { name: 'Айс Матча Латте', variants: [{ size: '450 ml', price: 45000 }] },
+                    { name: 'Айс Кофе на безлактозном', variants: [{ size: '350 ml', price: 35000 }, { size: '450 ml', price: 45000 }] },
+                    { name: 'Кофе Бамбл', variants: [{ size: '450 ml', price: 50000 }] }
                 ]
             },
-            smoothies: {
-                title: '🍹 Лимонады & Смузи',
+            mojito: {
+                title: '🍹 Мохито & Прохладительные',
                 items: [
-                    { name: 'Лимонад Классический', price: 22000, size: '0.4 л' },
-                    { name: 'Лимонад Маракуйя-Яблоко', price: 25000, size: '0.4 л' },
-                    { name: 'Смузи Клубника-Банан', price: 28000, size: '0.4 л' }
+                    { name: 'Мохито Классическое', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
+                    { name: 'Клубничный Драйв', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
+                    { name: 'Ягодный Микс', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
+                    { name: 'Апельсиновый Всплеск', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
+                    { name: 'Малиновый Мохито', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
+                    { name: 'Арбузный Бум', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
+                    { name: 'Смородиновый Заряд', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] }
                 ]
             },
-            bakery: {
-                title: '🥐 Десерты & Выпечка',
+            icetea: {
+                title: '🍃 Айс Ти & Коктейли',
                 items: [
-                    { name: 'Круассан классический', price: 15000, size: '1 шт' },
-                    { name: 'Чизкейк Нью-Йорк', price: 28000, size: '1 шт' },
-                    { name: 'Печенье Кукис', price: 12000, size: '1 шт' }
+                    { name: 'Манго Маракуйя', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
+                    { name: 'Ананасовая Свежесть', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
+                    { name: 'Голубая Лагуна', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
+                    { name: 'Окрыляющий Ред Бул', variants: [{ size: '500 ml', price: 50000 }, { size: '700 ml', price: 65000 }] },
+                    { name: 'Самаркандский Бриз (Айс Ти)', variants: [{ size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
+                    { name: 'Яблочный Сад (Айс Ти)', variants: [{ size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
+                    { name: 'Апельсиновый Айс Ти', variants: [{ size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
+                    { name: 'Ягодный Микс (Айс Ти)', variants: [{ size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] }
+                ]
+            },
+            milkshake: {
+                title: '🥤 Милкшейки',
+                items: [
+                    { name: 'Шоколадный', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
+                    { name: 'Банановый', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
+                    { name: 'Oreo', variants: [{ size: '300 ml', price: 25000 }, { size: '500 ml', price: 35000 }, { size: '700 ml', price: 45000 }] },
+                    { name: 'Баунти', variants: [{ size: '300 ml', price: 25000 }, { size: '500 ml', price: 35000 }, { size: '700 ml', price: 45000 }] },
+                    { name: 'Тирамису Шейк', variants: [{ size: '300 ml', price: 30000 }, { size: '500 ml', price: 35000 }, { size: '700 ml', price: 45000 }] },
+                    { name: 'Кофейный', variants: [{ size: '300 ml', price: 25000 }, { size: '500 ml', price: 35000 }, { size: '700 ml', price: 45000 }] },
+                    { name: 'Нутелла Банан', variants: [{ size: '300 ml', price: 25000 }, { size: '500 ml', price: 35000 }, { size: '700 ml', price: 45000 }] },
+                    { name: 'Кокосовый Рай', variants: [{ size: '300 ml', price: 30000 }, { size: '500 ml', price: 35000 }, { size: '700 ml', price: 45000 }] },
+                    { name: 'Манговый', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
+                    { name: 'Ванильный', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
+                    { name: 'Клубничный', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] }
+                ]
+            },
+            bubble: {
+                title: '🧋 Bubble Tea',
+                items: [
+                    { name: 'Классический', variants: [{ size: 'Стандарт', price: 35000 }] },
+                    { name: 'Клубничное Опьянение', variants: [{ size: 'Стандарт', price: 40000 }] },
+                    { name: 'Райское Наслаждение', variants: [{ size: 'Стандарт', price: 40000 }] },
+                    { name: 'Клубника в Шоколаде', variants: [{ size: 'Стандарт', price: 40000 }] },
+                    { name: 'Маття', variants: [{ size: 'Стандарт', price: 50000 }] },
+                    { name: 'Кофейный Бум', variants: [{ size: 'Стандарт', price: 40000 }] },
+                    { name: 'Oreo', variants: [{ size: 'Стандарт', price: 40000 }] },
+                    { name: 'Малина / Шоколад', variants: [{ size: 'Стандарт', price: 40000 }] },
+                    { name: 'Нутелла / Банан', variants: [{ size: 'Стандарт', price: 45000 }] }
                 ]
             }
         };
@@ -387,7 +468,7 @@
             progressEl.innerHTML = `Куплено <b>${stamps} из 6</b> кофе для получения подарка 🎁`;
         }
 
-        // Логика навигации
+        // Логика открывания категории
         function openCategory(key) {
             if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
 
@@ -397,18 +478,38 @@
             const drinksList = document.getElementById('drinksList');
             drinksList.innerHTML = '';
 
-            categoryData.items.forEach((item, index) => {
+            categoryData.items.forEach((item, itemIdx) => {
                 const drinkEl = document.createElement('div');
                 drinkEl.className = 'drink-item';
+                
+                // Выбранный объём по умолчанию — первый в списке
+                let selectedVariantIndex = 0;
+
+                const optionsHtml = SYRUPS_AND_ADDONS.map(addon => `<option value="${addon}">${addon}</option>`).join('');
+
                 drinkEl.innerHTML = `
                     <div class="drink-header">
                         <div class="drink-name">${item.name}</div>
-                        <div class="drink-price">${item.price.toLocaleString('ru-RU')} сум</div>
+                        <div class="drink-price" id="price-${key}-${itemIdx}">${item.variants[0].price.toLocaleString('ru-RU')} сум</div>
                     </div>
-                    <div class="drink-controls">
-                        <span style="font-size: 12px; color: #aaa;">Объем: ${item.size}</span>
-                        <button class="add-btn" onclick="addToCart('${item.name}', ${item.price}, '${item.size}')">+ В корзину</button>
-                    </div>
+                    
+                    ${item.variants.length > 1 ? `
+                        <div class="size-selector">
+                            ${item.variants.map((v, vIdx) => `
+                                <div class="size-btn ${vIdx === 0 ? 'active' : ''}" 
+                                     id="size-btn-${key}-${itemIdx}-${vIdx}" 
+                                     onclick="selectSize('${key}', ${itemIdx}, ${vIdx})">
+                                    ${v.size}
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+
+                    <select class="addon-select" id="addon-${key}-${itemIdx}">
+                        ${optionsHtml}
+                    </select>
+
+                    <button class="add-btn" onclick="addToCartFromUI('${key}', ${itemIdx})">+ Добавить в корзину</button>
                 `;
                 drinksList.appendChild(drinkEl);
             });
@@ -416,9 +517,29 @@
             document.getElementById('categoriesView').style.display = 'none';
             document.getElementById('drinksView').style.display = 'block';
 
-            // Включаем системную кнопку "Назад" в Telegram
             tg.BackButton.show();
             tg.BackButton.onClick(showCategories);
+        }
+
+        // Выбор размера
+        function selectSize(catKey, itemIdx, variantIdx) {
+            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('selectionChanged');
+
+            const item = MENU[catKey].items[itemIdx];
+            item.selectedVariant = variantIdx;
+
+            // Обновляем активность кнопок размеров
+            item.variants.forEach((_, vIdx) => {
+                const btn = document.getElementById(`size-btn-${catKey}-${itemIdx}-${vIdx}`);
+                if (btn) {
+                    if (vIdx === variantIdx) btn.classList.add('active');
+                    else btn.classList.remove('active');
+                }
+            });
+
+            // Обновляем отображение цены
+            const priceEl = document.getElementById(`price-${catKey}-${itemIdx}`);
+            priceEl.innerText = `${item.variants[variantIdx].price.toLocaleString('ru-RU')} сум`;
         }
 
         function showCategories() {
@@ -428,15 +549,37 @@
             tg.BackButton.hide();
         }
 
-        // Корзина и отправка заказа
-        function addToCart(name, price, size) {
+        // Добавление в корзину
+        function addToCartFromUI(catKey, itemIdx) {
             if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-            
-            const existing = cart.find(i => i.name === name && i.size === size);
+
+            const item = MENU[catKey].items[itemIdx];
+            const variantIdx = item.selectedVariant || 0;
+            const selectedVariant = item.variants[variantIdx];
+
+            const addonSelect = document.getElementById(`addon-${catKey}-${itemIdx}`);
+            const selectedAddon = addonSelect.value;
+
+            let finalPrice = selectedVariant.price;
+            let addonTitle = "";
+
+            if (selectedAddon !== "Без добавки") {
+                finalPrice += 5000; // Любая добавка или сироп +5000 сум по меню
+                addonTitle = selectedAddon.replace("✨ ", "").replace("➕ ", "").replace(" (+5k)", "");
+            }
+
+            const cartItemName = addonTitle ? `${item.name} (${addonTitle})` : item.name;
+
+            const existing = cart.find(i => i.name === cartItemName && i.size === selectedVariant.size);
             if (existing) {
                 existing.qty += 1;
             } else {
-                cart.push({ name, price, size, qty: 1 });
+                cart.push({
+                    name: cartItemName,
+                    price: finalPrice,
+                    size: selectedVariant.size,
+                    qty: 1
+                });
             }
 
             updateMainButton();
