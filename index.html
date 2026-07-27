@@ -216,18 +216,20 @@
             background: rgba(18, 16, 14, 0.6);
             border: 1px solid rgba(226, 168, 114, 0.2);
             color: #aaa;
-            padding: 6px;
+            padding: 8px 6px;
             border-radius: 8px;
-            font-size: 11px;
+            font-size: 12px;
             text-align: center;
             cursor: pointer;
+            user-select: none;
+            transition: all 0.2s ease;
         }
 
         .size-btn.active {
             border-color: #e2a872;
             color: #ffffff;
             background: rgba(226, 168, 114, 0.25);
-            font-weight: 600;
+            font-weight: 700;
         }
 
         /* Селектор сиропов и добавок */
@@ -350,7 +352,7 @@
             "➕ Собойница (+5k)"
         ];
 
-        // Меню с ценами
+        // Меню
         const MENU = {
             classic: {
                 title: '☕ Классика',
@@ -445,6 +447,7 @@
         };
 
         let cart = [];
+        let selectedSizes = {}; // Хранилище выбранных объёмов
 
         // Карта лояльности
         const urlParams = new URLSearchParams(window.location.search);
@@ -479,11 +482,12 @@
             drinksList.innerHTML = '';
 
             categoryData.items.forEach((item, itemIdx) => {
+                // Инициализируем выбор 0-го варианта по умолчанию
+                const itemKey = `${key}_${itemIdx}`;
+                selectedSizes[itemKey] = 0;
+
                 const drinkEl = document.createElement('div');
                 drinkEl.className = 'drink-item';
-                
-                // Выбранный объём по умолчанию — первый в списке
-                let selectedVariantIndex = 0;
 
                 const optionsHtml = SYRUPS_AND_ADDONS.map(addon => `<option value="${addon}">${addon}</option>`).join('');
 
@@ -525,21 +529,28 @@
         function selectSize(catKey, itemIdx, variantIdx) {
             if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('selectionChanged');
 
-            const item = MENU[catKey].items[itemIdx];
-            item.selectedVariant = variantIdx;
+            const itemKey = `${catKey}_${itemIdx}`;
+            selectedSizes[itemKey] = variantIdx;
 
-            // Обновляем активность кнопок размеров
+            const item = MENU[catKey].items[itemIdx];
+
+            // Обновляем визуальный активный класс у кнопок размера
             item.variants.forEach((_, vIdx) => {
                 const btn = document.getElementById(`size-btn-${catKey}-${itemIdx}-${vIdx}`);
                 if (btn) {
-                    if (vIdx === variantIdx) btn.classList.add('active');
-                    else btn.classList.remove('active');
+                    if (vIdx === variantIdx) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
                 }
             });
 
-            // Обновляем отображение цены
+            // Пересчитываем цену в заголовке
             const priceEl = document.getElementById(`price-${catKey}-${itemIdx}`);
-            priceEl.innerText = `${item.variants[variantIdx].price.toLocaleString('ru-RU')} сум`;
+            if (priceEl) {
+                priceEl.innerText = `${item.variants[variantIdx].price.toLocaleString('ru-RU')} сум`;
+            }
         }
 
         function showCategories() {
@@ -554,17 +565,18 @@
             if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
 
             const item = MENU[catKey].items[itemIdx];
-            const variantIdx = item.selectedVariant || 0;
+            const itemKey = `${catKey}_${itemIdx}`;
+            const variantIdx = selectedSizes[itemKey] || 0;
             const selectedVariant = item.variants[variantIdx];
 
             const addonSelect = document.getElementById(`addon-${catKey}-${itemIdx}`);
-            const selectedAddon = addonSelect.value;
+            const selectedAddon = addonSelect ? addonSelect.value : "Без добавки";
 
             let finalPrice = selectedVariant.price;
             let addonTitle = "";
 
             if (selectedAddon !== "Без добавки") {
-                finalPrice += 5000; // Любая добавка или сироп +5000 сум по меню
+                finalPrice += 5000;
                 addonTitle = selectedAddon.replace("✨ ", "").replace("➕ ", "").replace(" (+5k)", "");
             }
 
