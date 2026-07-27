@@ -154,10 +154,6 @@
             transition: transform 0.3s ease;
         }
 
-        .category-card:hover .category-bg {
-            transform: scale(1.05);
-        }
-
         .category-overlay {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -267,6 +263,7 @@
             font-weight: 700;
             color: var(--text-muted);
             transition: all 0.25s ease;
+            cursor: pointer;
         }
 
         .size-option input:checked + label {
@@ -477,6 +474,15 @@
             progressEl.innerHTML = `Куплено <b>${stamps} из 6</b> кофе для получения подарка 🎁`;
         }
 
+        function updatePrice(catKey, itemIdx, varIdx) {
+            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('selectionChanged');
+            const item = MENU[catKey].items[itemIdx];
+            const priceEl = document.getElementById(`price_${catKey}_${itemIdx}`);
+            if (priceEl && item && item.variants[varIdx]) {
+                priceEl.innerText = `${item.variants[varIdx].price.toLocaleString('ru-RU')} сум`;
+            }
+        }
+
         function openCategory(key) {
             if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
 
@@ -500,10 +506,8 @@
                                 <input type="radio" 
                                        id="size_${key}_${itemIdx}_${vIdx}" 
                                        name="size_${key}_${itemIdx}" 
-                                       data-cat="${key}"
-                                       data-item="${itemIdx}"
-                                       data-var="${vIdx}"
                                        value="${vIdx}" 
+                                       onchange="updatePrice('${key}', ${itemIdx}, ${vIdx})"
                                        ${vIdx === 0 ? 'checked' : ''}>
                                 <label for="size_${key}_${itemIdx}_${vIdx}">${v.size}</label>
                             </div>
@@ -534,24 +538,6 @@
             tg.BackButton.show();
             tg.BackButton.onClick(showCategories);
         }
-
-        // Динамический пересчет цены
-        document.getElementById('drinksList').addEventListener('change', function(e) {
-            if (e.target && e.target.type === 'radio') {
-                if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('selectionChanged');
-
-                const catKey = e.target.getAttribute('data-cat');
-                const itemIdx = parseInt(e.target.getAttribute('data-item'));
-                const varIdx = parseInt(e.target.getAttribute('data-var'));
-
-                const item = MENU[catKey].items[itemIdx];
-                const priceEl = document.getElementById(`price_${catKey}_${itemIdx}`);
-                
-                if (priceEl && item && item.variants[varIdx]) {
-                    priceEl.innerText = `${item.variants[varIdx].price.toLocaleString('ru-RU')} сум`;
-                }
-            }
-        });
 
         function showCategories() {
             if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
