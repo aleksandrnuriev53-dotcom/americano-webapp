@@ -204,19 +204,31 @@
             color: #e2a872;
         }
 
-        /* Селектор размеров */
+        /* --- НАДЁЖНЫЙ ВЫБОР РАЗМЕРА (Переключатели) --- */
         .size-selector {
             display: flex;
             gap: 8px;
             margin-top: 4px;
         }
 
-        .size-btn {
+        .size-option {
             flex: 1;
+            position: relative;
+        }
+
+        .size-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .size-option label {
+            display: block;
             background: rgba(18, 16, 14, 0.6);
             border: 1px solid rgba(226, 168, 114, 0.2);
             color: #aaa;
-            padding: 8px 6px;
+            padding: 8px 4px;
             border-radius: 8px;
             font-size: 12px;
             text-align: center;
@@ -225,11 +237,12 @@
             transition: all 0.2s ease;
         }
 
-        .size-btn.active {
+        .size-option input[type="radio"]:checked + label {
             border-color: #e2a872;
             color: #ffffff;
-            background: rgba(226, 168, 114, 0.25);
+            background: rgba(226, 168, 114, 0.3);
             font-weight: 700;
+            box-shadow: 0 0 8px rgba(226, 168, 114, 0.2);
         }
 
         /* Селектор сиропов и добавок */
@@ -352,7 +365,6 @@
             "➕ Собойница (+5k)"
         ];
 
-        // Меню
         const MENU = {
             classic: {
                 title: '☕ Классика',
@@ -447,7 +459,6 @@
         };
 
         let cart = [];
-        let selectedSizes = {}; // Хранилище выбранных объёмов
 
         // Карта лояльности
         const urlParams = new URLSearchParams(window.location.search);
@@ -471,7 +482,6 @@
             progressEl.innerHTML = `Куплено <b>${stamps} из 6</b> кофе для получения подарка 🎁`;
         }
 
-        // Логика открывания категории
         function openCategory(key) {
             if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
 
@@ -482,38 +492,42 @@
             drinksList.innerHTML = '';
 
             categoryData.items.forEach((item, itemIdx) => {
-                // Инициализируем выбор 0-го варианта по умолчанию
-                const itemKey = `${key}_${itemIdx}`;
-                selectedSizes[itemKey] = 0;
-
                 const drinkEl = document.createElement('div');
                 drinkEl.className = 'drink-item';
 
                 const optionsHtml = SYRUPS_AND_ADDONS.map(addon => `<option value="${addon}">${addon}</option>`).join('');
 
+                // Генерация радиокнопок для размеров
+                let sizesHtml = '';
+                if (item.variants.length > 1) {
+                    sizesHtml = `<div class="size-selector">` + 
+                        item.variants.map((v, vIdx) => `
+                            <div class="size-option">
+                                <input type="radio" 
+                                       id="size_${key}_${itemIdx}_${vIdx}" 
+                                       name="size_${key}_${itemIdx}" 
+                                       value="${vIdx}" 
+                                       ${vIdx === 0 ? 'checked' : ''} 
+                                       onchange="updatePriceDisplay('${key}', ${itemIdx})">
+                                <label for="size_${key}_${itemIdx}_${vIdx}">${v.size}</label>
+                            </div>
+                        `).join('') + 
+                    `</div>`;
+                }
+
                 drinkEl.innerHTML = `
                     <div class="drink-header">
                         <div class="drink-name">${item.name}</div>
-                        <div class="drink-price" id="price-${key}-${itemIdx}">${item.variants[0].price.toLocaleString('ru-RU')} сум</div>
+                        <div class="drink-price" id="price_${key}_${itemIdx}">${item.variants[0].price.toLocaleString('ru-RU')} сум</div>
                     </div>
                     
-                    ${item.variants.length > 1 ? `
-                        <div class="size-selector">
-                            ${item.variants.map((v, vIdx) => `
-                                <div class="size-btn ${vIdx === 0 ? 'active' : ''}" 
-                                     id="size-btn-${key}-${itemIdx}-${vIdx}" 
-                                     onclick="selectSize('${key}', ${itemIdx}, ${vIdx})">
-                                    ${v.size}
-                                </div>
-                            `).join('')}
-                        </div>
-                    ` : ''}
+                    ${sizesHtml}
 
-                    <select class="addon-select" id="addon-${key}-${itemIdx}">
+                    <select class="addon-select" id="addon_${key}_${itemIdx}">
                         ${optionsHtml}
                     </select>
 
-                    <button class="add-btn" onclick="addToCartFromUI('${key}', ${itemIdx})">+ Добавить в корзину</button>
+                    <button class="add-btn" onclick="addToCart('${key}', ${itemIdx})">+ Добавить в корзину</button>
                 `;
                 drinksList.appendChild(drinkEl);
             });
@@ -525,29 +539,15 @@
             tg.BackButton.onClick(showCategories);
         }
 
-        // Выбор размера
-        function selectSize(catKey, itemIdx, variantIdx) {
+        // Автоматическое обновление цены при переключении размера
+        function updatePriceDisplay(catKey, itemIdx) {
             if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('selectionChanged');
 
-            const itemKey = `${catKey}_${itemIdx}`;
-            selectedSizes[itemKey] = variantIdx;
-
             const item = MENU[catKey].items[itemIdx];
+            const selectedRadio = document.querySelector(`input[name="size_${catKey}_${itemIdx}"]:checked`);
+            const variantIdx = selectedRadio ? parseInt(selectedRadio.value) : 0;
 
-            // Обновляем визуальный активный класс у кнопок размера
-            item.variants.forEach((_, vIdx) => {
-                const btn = document.getElementById(`size-btn-${catKey}-${itemIdx}-${vIdx}`);
-                if (btn) {
-                    if (vIdx === variantIdx) {
-                        btn.classList.add('active');
-                    } else {
-                        btn.classList.remove('active');
-                    }
-                }
-            });
-
-            // Пересчитываем цену в заголовке
-            const priceEl = document.getElementById(`price-${catKey}-${itemIdx}`);
+            const priceEl = document.getElementById(`price_${catKey}_${itemIdx}`);
             if (priceEl) {
                 priceEl.innerText = `${item.variants[variantIdx].price.toLocaleString('ru-RU')} сум`;
             }
@@ -561,15 +561,18 @@
         }
 
         // Добавление в корзину
-        function addToCartFromUI(catKey, itemIdx) {
+        function addToCart(catKey, itemIdx) {
             if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
 
             const item = MENU[catKey].items[itemIdx];
-            const itemKey = `${catKey}_${itemIdx}`;
-            const variantIdx = selectedSizes[itemKey] || 0;
+            
+            // Находим выбранный объём
+            const selectedRadio = document.querySelector(`input[name="size_${catKey}_${itemIdx}"]:checked`);
+            const variantIdx = selectedRadio ? parseInt(selectedRadio.value) : 0;
             const selectedVariant = item.variants[variantIdx];
 
-            const addonSelect = document.getElementById(`addon-${catKey}-${itemIdx}`);
+            // Находим выбранную добавку/сироп
+            const addonSelect = document.getElementById(`addon_${catKey}_${itemIdx}`);
             const selectedAddon = addonSelect ? addonSelect.value : "Без добавки";
 
             let finalPrice = selectedVariant.price;
