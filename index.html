@@ -1,608 +1,82 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Americano Special Bar</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        :root {
-            --bg-color: #0f0c0a;
-            --card-bg: rgba(28, 23, 19, 0.65);
-            --card-border: rgba(212, 163, 115, 0.2);
-            --accent-gold: #e6b87d;
-            --accent-glow: rgba(230, 184, 125, 0.4);
-            --text-main: #fefae0;
-            --text-muted: #a39587;
-        }
+function updatePrice(catKey, itemIdx) {
+    if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('selectionChanged');
+    
+    const item = MENU[catKey].items[itemIdx];
+    const priceEl = document.getElementById(`price_${catKey}_${itemIdx}`);
+    
+    // Определяем выбранный размер
+    const selectedRadio = document.querySelector(`input[name="size_${catKey}_${itemIdx}"]:checked`);
+    const variantIdx = selectedRadio ? parseInt(selectedRadio.value) : 0;
+    const basePrice = item.variants[variantIdx] ? item.variants[variantIdx].price : item.variants[0].price;
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
+    // Определяем выбранную добавку
+    const addonSelect = document.getElementById(`addon_${catKey}_${itemIdx}`);
+    const selectedAddon = addonSelect ? addonSelect.value : "Без добавки";
+    
+    let totalPrice = basePrice;
+    if (selectedAddon !== "Без добавки") {
+        totalPrice += 5000;
+    }
 
-        body {
-            background: var(--bg-color);
-            background-image: 
-                radial-gradient(circle at 50% 0%, rgba(212, 163, 115, 0.15) 0%, transparent 70%),
-                radial-gradient(circle at 100% 100%, rgba(180, 100, 50, 0.1) 0%, transparent 60%);
-            color: var(--text-main);
-            padding: 14px;
-            padding-bottom: 90px;
-            min-height: 100vh;
-        }
+    // Обновляем ценник над переключателями
+    if (priceEl) {
+        priceEl.innerText = `${totalPrice.toLocaleString('ru-RU')} сум`;
+    }
+}
 
-        /* HEADER */
-        .header {
-            text-align: center;
-            margin-bottom: 18px;
-        }
+function openCategory(key) {
+    if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
 
-        .brand-title {
-            font-size: 24px;
-            font-weight: 900;
-            letter-spacing: 2px;
-            background: linear-gradient(135deg, #fff 0%, var(--accent-gold) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
-            text-shadow: 0 0 20px var(--accent-glow);
-        }
+    const categoryData = MENU[key];
+    document.getElementById('categoryTitle').innerText = categoryData.title;
 
-        .brand-subtitle {
-            font-size: 11px;
-            color: var(--text-muted);
-            margin-top: 4px;
-            letter-spacing: 0.5px;
-        }
+    const drinksList = document.getElementById('drinksList');
+    drinksList.innerHTML = '';
 
-        /* GLASS LOYALTY CARD WITH GLOW */
-        .loyalty-card {
-            background: rgba(30, 24, 20, 0.45);
-            border: 1px solid rgba(212, 163, 115, 0.3);
-            border-radius: 20px;
-            padding: 18px 16px;
-            margin-bottom: 22px;
-            text-align: center;
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px var(--accent-glow);
-            position: relative;
-            overflow: hidden;
-        }
+    categoryData.items.forEach((item, itemIdx) => {
+        const drinkEl = document.createElement('div');
+        drinkEl.className = 'drink-item';
 
-        .loyalty-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; height: 1px;
-            background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
-        }
+        const optionsHtml = SYRUPS_AND_ADDONS.map(addon => `<option value="${addon}">${addon}</option>`).join('');
 
-        .loyalty-title {
-            font-size: 13px;
-            font-weight: 700;
-            margin-bottom: 14px;
-            color: var(--accent-gold);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .stamps-grid {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-
-        .stamp {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            border: 1px solid rgba(212, 163, 115, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            background: rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .stamp.active {
-            border-color: var(--accent-gold);
-            background: linear-gradient(135deg, #e6b87d 0%, #b8860b 100%);
-            box-shadow: 0 0 15px var(--accent-glow);
-            transform: scale(1.08);
-        }
-
-        .loyalty-progress {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-
-        /* CATEGORIES WITH PHOTOS & GLOW */
-        .categories-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 14px;
-        }
-
-        .category-card {
-            position: relative;
-            height: 100px;
-            border-radius: 18px;
-            overflow: hidden;
-            border: 1px solid var(--card-border);
-            cursor: pointer;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .category-card:active {
-            transform: scale(0.98);
-            box-shadow: 0 0 20px var(--accent-glow);
-        }
-
-        .category-bg {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-size: cover;
-            background-position: center;
-            filter: brightness(0.65) contrast(1.1);
-            transition: transform 0.3s ease;
-        }
-
-        .category-overlay {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(90deg, rgba(15, 12, 10, 0.85) 0%, rgba(15, 12, 10, 0.2) 100%);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-        }
-
-        .category-name {
-            font-size: 17px;
-            font-weight: 800;
-            color: #fff;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-        }
-
-        .category-arrow {
-            color: var(--accent-gold);
-            font-size: 22px;
-            text-shadow: 0 0 10px var(--accent-glow);
-        }
-
-        /* DRINKS VIEW (NO PHOTOS) */
-        .back-btn {
-            background: rgba(212, 163, 115, 0.15);
-            border: 1px solid var(--card-border);
-            color: var(--accent-gold);
-            font-size: 13px;
-            font-weight: 700;
-            padding: 8px 16px;
-            border-radius: 12px;
-            cursor: pointer;
-            margin-bottom: 16px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .view-title {
-            font-size: 20px;
-            font-weight: 800;
-            margin-bottom: 16px;
-            color: var(--text-main);
-        }
-
-        .drink-item {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-        }
-
-        .drink-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .drink-name {
-            font-size: 16px;
-            font-weight: 800;
-        }
-
-        .drink-price {
-            font-size: 16px;
-            font-weight: 800;
-            color: var(--accent-gold);
-            text-shadow: 0 0 10px var(--accent-glow);
-        }
-
-        /* SIZE SELECTOR BUTTONS */
-        .size-selector {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
-            background: rgba(0,0,0,0.3);
-            padding: 4px;
-            border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .size-option {
-            flex: 1;
-            position: relative;
-        }
-
-        .size-option input {
-            position: absolute;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-        }
-
-        .size-option label {
-            display: block;
-            text-align: center;
-            padding: 8px 0;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--text-muted);
-            transition: all 0.25s ease;
-            cursor: pointer;
-        }
-
-        .size-option input:checked + label {
-            background: linear-gradient(135deg, #e6b87d 0%, #c49354 100%);
-            color: #0f0c0a;
-            box-shadow: 0 2px 10px var(--accent-glow);
-        }
-
-        .addon-select {
-            width: 100%;
-            background: rgba(0,0,0,0.4);
-            border: 1px solid var(--card-border);
-            color: var(--text-main);
-            padding: 10px 12px;
-            border-radius: 10px;
-            font-size: 12px;
-            margin-bottom: 12px;
-            outline: none;
-        }
-
-        .add-btn {
-            width: 100%;
-            background: linear-gradient(135deg, #e6b87d 0%, #b8860b 100%);
-            color: #0f0c0a;
-            border: none;
-            padding: 12px;
-            border-radius: 12px;
-            font-weight: 800;
-            font-size: 14px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px var(--accent-glow);
-            transition: all 0.2s ease;
-        }
-
-        .add-btn:active {
-            transform: scale(0.98);
-        }
-    </style>
-</head>
-<body>
-
-    <div class="header">
-        <div class="brand-title">☕ AMERICANO</div>
-        <div class="brand-subtitle">PREMIUM COFFEE & DRINKS</div>
-    </div>
-
-    <!-- ПОЛУПРОЗРАЧНАЯ КАРТА ЛОЯЛЬНОСТИ СО СВЕЧЕНИЕМ -->
-    <div class="loyalty-card">
-        <div class="loyalty-title">Карта Лояльности</div>
-        <div class="stamps-grid">
-            <div class="stamp" id="s1">⚪</div>
-            <div class="stamp" id="s2">⚪</div>
-            <div class="stamp" id="s3">⚪</div>
-            <div class="stamp" id="s4">⚪</div>
-            <div class="stamp" id="s5">⚪</div>
-            <div class="stamp" id="s6">⚪</div>
-        </div>
-        <div class="loyalty-progress" id="progressText">Куплено <b>0 из 6</b> кофе для получения подарка 🎁</div>
-    </div>
-
-    <!-- VIEW 1: CATEGORIES WITH IMAGES -->
-    <div id="categoriesView">
-        <div class="categories-grid">
-            <div class="category-card" onclick="openCategory('classic')">
-                <div class="category-bg" style="background-image: url('https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=600&q=80');"></div>
-                <div class="category-overlay">
-                    <span class="category-name">☕ Классический Кофе</span>
-                    <span class="category-arrow">➔</span>
-                </div>
-            </div>
-            <div class="category-card" onclick="openCategory('iced')">
-                <div class="category-bg" style="background-image: url('https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=600&q=80');"></div>
-                <div class="category-overlay">
-                    <span class="category-name">🧊 Айс Кофе</span>
-                    <span class="category-arrow">➔</span>
-                </div>
-            </div>
-            <div class="category-card" onclick="openCategory('mojito')">
-                <div class="category-bg" style="background-image: url('https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=600&q=80');"></div>
-                <div class="category-overlay">
-                    <span class="category-name">🍹 Мохито & Лимонады</span>
-                    <span class="category-arrow">➔</span>
-                </div>
-            </div>
-            <div class="category-card" onclick="openCategory('icetea')">
-                <div class="category-bg" style="background-image: url('https://images.unsplash.com/photo-1556881286-fc6915169721?w=600&q=80');"></div>
-                <div class="category-overlay">
-                    <span class="category-name">🍃 Айс Ти & Коктейли</span>
-                    <span class="category-arrow">➔</span>
-                </div>
-            </div>
-            <div class="category-card" onclick="openCategory('milkshake')">
-                <div class="category-bg" style="background-image: url('https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=600&q=80');"></div>
-                <div class="category-overlay">
-                    <span class="category-name">🥤 Милкшейки</span>
-                    <span class="category-arrow">➔</span>
-                </div>
-            </div>
-            <div class="category-card" onclick="openCategory('bubble')">
-                <div class="category-bg" style="background-image: url('https://images.unsplash.com/photo-1558857563-b371033873b8?w=600&q=80');"></div>
-                <div class="category-overlay">
-                    <span class="category-name">🧋 Bubble Tea</span>
-                    <span class="category-arrow">➔</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- VIEW 2: DRINKS LIST (NO IMAGES) -->
-    <div id="drinksView" style="display: none;">
-        <button class="back-btn" onclick="showCategories()">← К категориям</button>
-        <div class="view-title" id="categoryTitle">Загрузка...</div>
-        <div class="drinks-list" id="drinksList"></div>
-    </div>
-
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-
-        const SYRUPS_AND_ADDONS = [
-            "Без добавки",
-            "✨ Сироп: Ванильный (+5k)",
-            "✨ Сироп: Кокосовый (+5k)",
-            "✨ Сироп: Карамельный (+5k)",
-            "✨ Сироп: Соленая карамель (+5k)",
-            "✨ Сироп: Лесной орех (+5k)",
-            "✨ Сироп: Тоффи (+5k)",
-            "✨ Сироп: Шоколадное печенье (+5k)",
-            "➕ Топпинг (+5k)",
-            "➕ Мята (+5k)",
-            "➕ Лимон (+5k)",
-            "➕ Мёд (+5k)",
-            "➕ Собойница (+5k)"
-        ];
-
-        const MENU = {
-            classic: {
-                title: '☕ Классический Кофе',
-                items: [
-                    { name: 'Эспрессо', variants: [{ size: '250 ml', price: 20000 }, { size: '350 ml', price: 25000 }] },
-                    { name: 'Американо', variants: [{ size: '250 ml', price: 20000 }, { size: '350 ml', price: 25000 }] },
-                    { name: 'Капучинно', variants: [{ size: '250 ml', price: 20000 }, { size: '350 ml', price: 25000 }, { size: '450 ml', price: 30000 }] },
-                    { name: 'Латте', variants: [{ size: '250 ml', price: 20000 }, { size: '350 ml', price: 25000 }, { size: '450 ml', price: 30000 }] },
-                    { name: 'Флет Уайт', variants: [{ size: '350 ml', price: 30000 }] },
-                    { name: 'Раф Сливочный', variants: [{ size: '250 ml', price: 25000 }, { size: '350 ml', price: 35000 }, { size: '450 ml', price: 45000 }] }
-                ]
-            },
-            iced: {
-                title: '🧊 Айс Кофе',
-                items: [
-                    { name: 'Фраппе Oreo', variants: [{ size: '350 ml', price: 35000 }, { size: '450 ml', price: 45000 }] },
-                    { name: 'Фраппе Chocolate', variants: [{ size: '350 ml', price: 35000 }, { size: '450 ml', price: 45000 }] },
-                    { name: 'Эспрессо - Тоник', variants: [{ size: '350 ml', price: 35000 }, { size: '450 ml', price: 45000 }] },
-                    { name: 'Айс Латте', variants: [{ size: '350 ml', price: 25000 }, { size: '450 ml', price: 35000 }] }
-                ]
-            },
-            mojito: {
-                title: '🍹 Мохито & Лимонады',
-                items: [
-                    { name: 'Мохито Классическое', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
-                    { name: 'Клубничный Драйв', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] }
-                ]
-            },
-            icetea: {
-                title: '🍃 Айс Ти & Коктейли',
-                items: [
-                    { name: 'Манго Маракуйя', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
-                    { name: 'Голубая Лагуна', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] }
-                ]
-            },
-            milkshake: {
-                title: '🥤 Милкшейки',
-                items: [
-                    { name: 'Шоколадный', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
-                    { name: 'Oreo Шейк', variants: [{ size: '300 ml', price: 25000 }, { size: '500 ml', price: 35000 }, { size: '700 ml', price: 45000 }] }
-                ]
-            },
-            bubble: {
-                title: '🧋 Bubble Tea',
-                items: [
-                    { name: 'Классический Bubble', variants: [{ size: 'Стандарт', price: 35000 }] },
-                    { name: 'Маття Bubble Tea', variants: [{ size: 'Стандарт', price: 50000 }] }
-                ]
-            }
-        };
-
-        let cart = [];
-
-        // Штампы
-        const urlParams = new URLSearchParams(window.location.search);
-        const stamps = parseInt(urlParams.get('stamps')) || 0;
-
-        for (let i = 1; i <= 6; i++) {
-            const stampEl = document.getElementById(`s${i}`);
-            if (i <= stamps) {
-                stampEl.classList.add('active');
-                stampEl.innerText = '☕';
-            } else {
-                stampEl.classList.remove('active');
-                stampEl.innerText = '⚪';
-            }
-        }
-
-        const progressEl = document.getElementById('progressText');
-        if (stamps >= 6) {
-            progressEl.innerHTML = '🎁 <b>У вас есть бесплатный напиток!</b>';
-        } else {
-            progressEl.innerHTML = `Куплено <b>${stamps} из 6</b> кофе для получения подарка 🎁`;
-        }
-
-        function updatePrice(catKey, itemIdx, varIdx) {
-            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('selectionChanged');
-            const item = MENU[catKey].items[itemIdx];
-            const priceEl = document.getElementById(`price_${catKey}_${itemIdx}`);
-            if (priceEl && item && item.variants[varIdx]) {
-                priceEl.innerText = `${item.variants[varIdx].price.toLocaleString('ru-RU')} сум`;
-            }
-        }
-
-        function openCategory(key) {
-            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-
-            const categoryData = MENU[key];
-            document.getElementById('categoryTitle').innerText = categoryData.title;
-
-            const drinksList = document.getElementById('drinksList');
-            drinksList.innerHTML = '';
-
-            categoryData.items.forEach((item, itemIdx) => {
-                const drinkEl = document.createElement('div');
-                drinkEl.className = 'drink-item';
-
-                const optionsHtml = SYRUPS_AND_ADDONS.map(addon => `<option value="${addon}">${addon}</option>`).join('');
-
-                let sizesHtml = '';
-                if (item.variants.length > 1) {
-                    sizesHtml = `<div class="size-selector">` + 
-                        item.variants.map((v, vIdx) => `
-                            <div class="size-option">
-                                <input type="radio" 
-                                       id="size_${key}_${itemIdx}_${vIdx}" 
-                                       name="size_${key}_${itemIdx}" 
-                                       value="${vIdx}" 
-                                       onchange="updatePrice('${key}', ${itemIdx}, ${vIdx})"
-                                       ${vIdx === 0 ? 'checked' : ''}>
-                                <label for="size_${key}_${itemIdx}_${vIdx}">${v.size}</label>
-                            </div>
-                        `).join('') + 
-                    `</div>`;
-                }
-
-                drinkEl.innerHTML = `
-                    <div class="drink-header">
-                        <div class="drink-name">${item.name}</div>
-                        <div class="drink-price" id="price_${key}_${itemIdx}">${item.variants[0].price.toLocaleString('ru-RU')} сум</div>
+        let sizesHtml = '';
+        if (item.variants.length > 1) {
+            sizesHtml = `<div class="size-selector">` + 
+                item.variants.map((v, vIdx) => `
+                    <div class="size-option">
+                        <input type="radio" 
+                               id="size_${key}_${itemIdx}_${vIdx}" 
+                               name="size_${key}_${itemIdx}" 
+                               value="${vIdx}" 
+                               onchange="updatePrice('${key}', ${itemIdx})"
+                               ${vIdx === 0 ? 'checked' : ''}>
+                        <label for="size_${key}_${itemIdx}_${vIdx}">${v.size}</label>
                     </div>
-                    
-                    ${sizesHtml}
-
-                    <select class="addon-select" id="addon_${key}_${itemIdx}">
-                        ${optionsHtml}
-                    </select>
-
-                    <button class="add-btn" onclick="addToCart('${key}', ${itemIdx})">+ Добавить в корзину</button>
-                `;
-                drinksList.appendChild(drinkEl);
-            });
-
-            document.getElementById('categoriesView').style.display = 'none';
-            document.getElementById('drinksView').style.display = 'block';
-
-            tg.BackButton.show();
-            tg.BackButton.onClick(showCategories);
+                `).join('') + 
+            `</div>`;
         }
 
-        function showCategories() {
-            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-            document.getElementById('drinksView').style.display = 'none';
-            document.getElementById('categoriesView').style.display = 'block';
-            tg.BackButton.hide();
-        }
-
-        function addToCart(catKey, itemIdx) {
-            if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-
-            const item = MENU[catKey].items[itemIdx];
+        drinkEl.innerHTML = `
+            <div class="drink-header">
+                <div class="drink-name">${item.name}</div>
+                <div class="drink-price" id="price_${key}_${itemIdx}">${item.variants[0].price.toLocaleString('ru-RU')} сум</div>
+            </div>
             
-            const selectedRadio = document.querySelector(`input[name="size_${catKey}_${itemIdx}"]:checked`);
-            const variantIdx = selectedRadio ? parseInt(selectedRadio.value) : 0;
-            const selectedVariant = item.variants[variantIdx];
+            ${sizesHtml}
 
-            const addonSelect = document.getElementById(`addon_${catKey}_${itemIdx}`);
-            const selectedAddon = addonSelect ? addonSelect.value : "Без добавки";
+            <!-- Добавили вызов updatePrice при смене сиропа/добавки -->
+            <select class="addon-select" id="addon_${key}_${itemIdx}" onchange="updatePrice('${key}', ${itemIdx})">
+                ${optionsHtml}
+            </select>
 
-            let finalPrice = selectedVariant.price;
-            let addonTitle = "";
+            <button class="add-btn" onclick="addToCart('${key}', ${itemIdx})">+ Добавить в корзину</button>
+        `;
+        drinksList.appendChild(drinkEl);
+    });
 
-            if (selectedAddon !== "Без добавки") {
-                finalPrice += 5000;
-                addonTitle = selectedAddon.replace("✨ ", "").replace("➕ ", "").replace(" (+5k)", "");
-            }
+    document.getElementById('categoriesView').style.display = 'none';
+    document.getElementById('drinksView').style.display = 'block';
 
-            const cartItemName = addonTitle ? `${item.name} (${addonTitle})` : item.name;
-
-            const existing = cart.find(i => i.name === cartItemName && i.size === selectedVariant.size);
-            if (existing) {
-                existing.qty += 1;
-            } else {
-                cart.push({
-                    name: cartItemName,
-                    price: finalPrice,
-                    size: selectedVariant.size,
-                    qty: 1
-                });
-            }
-
-            updateMainButton();
-        }
-
-        function updateMainButton() {
-            if (cart.length === 0) {
-                tg.MainButton.hide();
-                return;
-            }
-
-            const totalSum = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-            const totalCount = cart.reduce((sum, item) => sum + item.qty, 0);
-
-            tg.MainButton.setText(`Заказать (${totalCount}) • ${totalSum.toLocaleString('ru-RU')} сум`);
-            tg.MainButton.show();
-        }
-
-        tg.MainButton.onClick(() => {
-            if (cart.length === 0) return;
-            tg.sendData(JSON.stringify({
-                type: 'order',
-                cart: cart
-            }));
-        });
-    </script>
-</body>
-</html>
+    tg.BackButton.show();
+    tg.BackButton.onClick(showCategories);
+}
