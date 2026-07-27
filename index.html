@@ -2,132 +2,240 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Americano Coffee Menu</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* --- ГЛУБОКИЙ ТЕМНЫЙ ФОН И БЕЖЕВОЕ СВЕЧЕНИЕ --- */
         body {
-            background-color: #121212;
-            color: #f1f1f1;
+            background-color: #12100e;
+            color: #ffffff;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            padding-bottom: 90px;
+            margin: 0;
+            padding: 16px;
+            padding-bottom: 30px;
+            position: relative;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        .header { text-align: center; padding: 16px 16px 10px; }
-        .title { font-size: 22px; font-weight: 800; color: #e2a872; letter-spacing: 1px; }
-        .subtitle { font-size: 12px; color: #888; margin-top: 2px; }
+        /* Бежевое свечение сверху */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -120px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 380px;
+            height: 380px;
+            background: radial-gradient(circle, rgba(226, 168, 114, 0.22) 0%, rgba(18, 16, 14, 0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
 
+        /* Мягкое свечение снизу справа */
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -80px;
+            right: -80px;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(190, 130, 80, 0.15) 0%, rgba(18, 16, 14, 0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* --- ШАПКА --- */
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+            margin-top: 8px;
+        }
+
+        .title {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: #e2a872;
+            text-shadow: 0 0 15px rgba(226, 168, 114, 0.3);
+            margin-bottom: 4px;
+        }
+
+        .subtitle {
+            font-size: 13px;
+            color: #a09a95;
+            letter-spacing: 0.5px;
+        }
+
+        /* --- КАРТА ЛОЯЛЬНОСТИ --- */
         .card {
-            background: linear-gradient(145deg, #1f1f1f, #272727);
-            border: 1px solid #333; border-radius: 16px; padding: 14px;
-            margin: 10px 16px 16px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            background: rgba(35, 30, 26, 0.75);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 168, 114, 0.25);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 28px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1);
         }
-        .card-title { font-size: 13px; font-weight: 600; color: #ccc; margin-bottom: 10px; }
-        .stamps-container { display: flex; justify-content: space-between; margin-bottom: 10px; }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #f1e5d8;
+            margin-bottom: 16px;
+            letter-spacing: 0.5px;
+        }
+
+        .stamps-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
         .stamp {
-            width: 38px; height: 38px; border-radius: 50%; border: 2px dashed #555;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 16px; background: #1a1a1a; transition: all 0.3s ease;
-        }
-        .stamp.active { border: 2px solid #e2a872; background: #3a2b20; transform: scale(1.05); }
-        .progress-text { font-size: 12px; color: #aaa; }
-
-        .categories-wrapper {
-            position: sticky; top: 0; background: #121212; z-index: 100;
-            padding: 8px 16px; border-bottom: 1px solid #222;
-        }
-        .categories { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
-        .categories::-webkit-scrollbar { display: none; }
-        .cat-btn {
-            background: #222; color: #aaa; border: 1px solid #333; padding: 8px 14px;
-            border-radius: 20px; font-size: 13px; font-weight: 600; white-space: nowrap; cursor: pointer;
-        }
-        .cat-btn.active { background: #e2a872; color: #121212; border-color: #e2a872; }
-
-        .menu-container { padding: 16px; }
-        .section-title { font-size: 18px; font-weight: 700; color: #e2a872; margin: 16px 0 12px; display: flex; justify-content: space-between; align-items: center; }
-        .section-volumes { font-size: 11px; color: #777; font-weight: normal; }
-
-        .item-card {
-            background: #1e1e1e; border-radius: 12px; padding: 12px; margin-bottom: 12px;
-            border: 1px solid #2a2a2a; display: flex; flex-direction: column; gap: 8px;
-        }
-        .item-header { display: flex; justify-content: space-between; align-items: flex-start; }
-        .item-name { font-size: 15px; font-weight: 700; color: #fff; }
-        .item-desc { font-size: 11px; color: #888; line-height: 1.3; }
-
-        .size-selector { display: flex; gap: 6px; margin-top: 4px; }
-        .size-btn {
-            flex: 1; background: #282828; border: 1px solid #3a3a3a; color: #bbb;
-            padding: 6px; border-radius: 8px; font-size: 11px; text-align: center; cursor: pointer;
-        }
-        .size-btn.active { background: #3a2b20; border-color: #e2a872; color: #e2a872; font-weight: bold; }
-
-        .item-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
-        .item-price { font-size: 15px; font-weight: 800; color: #e2a872; }
-        .add-btn {
-            background: #e2a872; color: #121212; border: none; padding: 6px 14px;
-            border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer;
-        }
-        .add-btn:active { transform: scale(0.95); }
-
-        /* Bottom Nav Bar */
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a;
-            border-top: 1px solid #2c2c2c; display: flex; justify-content: space-around;
-            padding: 10px 0; z-index: 1000;
-        }
-        .nav-item { text-align: center; color: #777; font-size: 11px; cursor: pointer; position: relative; }
-        .nav-item.active { color: #e2a872; font-weight: bold; }
-        .nav-icon { font-size: 18px; margin-bottom: 2px; }
-        .badge {
-            position: absolute; top: -4px; right: 2px; background: #e53935; color: white;
-            border-radius: 50%; padding: 2px 6px; font-size: 10px; font-weight: bold; display: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 2px dashed rgba(226, 168, 114, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            background: rgba(18, 16, 14, 0.6);
+            transition: all 0.3s ease;
         }
 
-        /* Cart Modal */
-        .cart-modal {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85);
-            z-index: 2000; display: none; flex-direction: column; justify-content: flex-end;
-        }
-        .cart-content {
-            background: #1e1e1e; border-radius: 20px 20px 0 0; padding: 20px;
-            max-height: 80vh; overflow-y: auto; border-top: 1px solid #333;
-        }
-        .cart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-        .cart-title { font-size: 18px; font-weight: bold; color: #e2a872; }
-        .close-btn { font-size: 20px; color: #888; cursor: pointer; }
-
-        .cart-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 10px 0; border-bottom: 1px solid #2a2a2a;
-        }
-        .cart-item-info { font-size: 14px; }
-        .cart-item-size { font-size: 11px; color: #888; }
-        .cart-controls { display: flex; align-items: center; gap: 10px; }
-        .btn-qty {
-            background: #2b2b2b; color: #e2a872; border: 1px solid #444; width: 26px; height: 26px;
-            border-radius: 6px; font-size: 16px; font-weight: bold; display: flex; align-items: center; justify-content: center;
+        .stamp.active {
+            border: 2px solid #e2a872;
+            background: radial-gradient(circle, #523b28 0%, #291c13 100%);
+            box-shadow: 0 0 12px rgba(226, 168, 114, 0.4);
+            transform: scale(1.05);
         }
 
-        .checkout-btn {
-            background: #e2a872; color: #121212; width: 100%; border: none; padding: 14px;
-            border-radius: 12px; font-size: 16px; font-weight: bold; margin-top: 16px; cursor: pointer;
+        .progress-text {
+            font-size: 13px;
+            color: #c5bbb0;
+        }
+
+        /* --- РАЗДЕЛ КАТЕГОРИЙ --- */
+        .section-header {
+            font-size: 18px;
+            font-weight: 700;
+            color: #f1e5d8;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Сетка прямоугольных кнопок категорий */
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+
+        .category-card {
+            position: relative;
+            height: 120px;
+            border-radius: 18px;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+            border: 1px solid rgba(226, 168, 114, 0.2);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+            cursor: pointer;
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .category-card:active {
+            transform: scale(0.96);
+            border-color: #e2a872;
+            box-shadow: 0 0 15px rgba(226, 168, 114, 0.4);
+        }
+
+        /* Затеменение фонового фото для разборчивости текста */
+        .category-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(18, 16, 14, 0.88) 100%);
+        }
+
+        .category-title {
+            position: relative;
+            z-index: 2;
+            padding: 12px 14px;
+            font-weight: 700;
+            font-size: 15px;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            line-height: 1.2;
+        }
+
+        /* --- СПИСОК НАПИТКОВ --- */
+        .menu-list {
+            background: rgba(35, 30, 26, 0.5);
+            border-radius: 18px;
+            padding: 8px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-name {
+            font-size: 15px;
+            font-weight: 500;
+            color: #eae0d5;
+        }
+
+        .item-price {
+            color: #e2a872;
+            font-weight: 700;
+            font-size: 15px;
         }
     </style>
 </head>
 <body>
 
-    <div id="mainView">
+    <div class="container">
+        <!-- Заголовок -->
         <div class="header">
             <div class="title">☕ AMERICANO</div>
             <div class="subtitle">3 филиала • Каждый 7-й кофе бесплатно</div>
         </div>
 
+        <!-- Карта лояльности -->
         <div class="card">
             <div class="card-title">Ваша карта лояльности</div>
-            <div class="stamps-container">
+            <div class="stamps-container" id="stampsBox">
                 <div class="stamp" id="s1">⚪</div>
                 <div class="stamp" id="s2">⚪</div>
                 <div class="stamp" id="s3">⚪</div>
@@ -135,47 +243,62 @@
                 <div class="stamp" id="s5">⚪</div>
                 <div class="stamp" id="s6">⚪</div>
             </div>
-            <div class="progress-text" id="progressText">Загрузка данных...</div>
+            <div class="progress-text" id="progressText">Загрузка данных карты...</div>
         </div>
 
-        <div class="categories-wrapper">
-            <div class="categories">
-                <button class="cat-btn active" onclick="scrollToCat('classic')">☕ Классика</button>
-                <button class="cat-btn" onclick="scrollToCat('ice-coffee')">🧊 Айс Кофе</button>
-                <button class="cat-btn" onclick="scrollToCat('refresh')">🍹 Мохито & Коктейли</button>
-                <button class="cat-btn" onclick="scrollToCat('ice-tea')">🍃 Айс Ти</button>
-                <button class="cat-btn" onclick="scrollToCat('milkshake')">🥤 Милкшейки</button>
-                <button class="cat-btn" onclick="scrollToCat('fresh')">🍊 Фреши</button>
-                <button class="cat-btn" onclick="scrollToCat('add')">➕ Добавки</button>
+        <!-- Категории меню с фотками -->
+        <div class="section-header">📁 Категории меню</div>
+        
+        <div class="categories-grid">
+            <!-- Горячие напитки -->
+            <div class="category-card" style="background-image: url('https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=400&auto=format&fit=crop');">
+                <div class="category-overlay"></div>
+                <div class="category-title">🔥 Горячие напитки</div>
+            </div>
+
+            <!-- Холодные напитки -->
+            <div class="category-card" style="background-image: url('https://images.unsplash.com/photo-1517701604599-bb29b565090c?q=80&w=400&auto=format&fit=crop');">
+                <div class="category-overlay"></div>
+                <div class="category-title">🧊 Холодные напитки</div>
+            </div>
+
+            <!-- Лимонады и смузи -->
+            <div class="category-card" style="background-image: url('https://images.unsplash.com/photo-1551024709-8f23befc6f87?q=80&w=400&auto=format&fit=crop');">
+                <div class="category-overlay"></div>
+                <div class="category-title">🍹 Лимонады & Смузи</div>
+            </div>
+
+            <!-- Десерты -->
+            <div class="category-card" style="background-image: url('https://images.unsplash.com/photo-1555507036-ab1f4038808a?q=80&w=400&auto=format&fit=crop');">
+                <div class="category-overlay"></div>
+                <div class="category-title">🥐 Десерты & Выпечка</div>
             </div>
         </div>
 
-        <div class="menu-container" id="menuList"></div>
-    </div>
+        <!-- Популярные позиции -->
+        <div class="section-header">⭐ Популярное</div>
 
-    <!-- Модальное окно корзины -->
-    <div class="cart-modal" id="cartModal">
-        <div class="cart-content">
-            <div class="cart-header">
-                <div class="cart-title">🛒 Ваши заказы</div>
-                <div class="close-btn" onclick="toggleCart()">✕</div>
+        <div class="menu-list">
+            <div class="menu-item">
+                <div class="item-name">Эспрессо / Доппио</div>
+                <div class="item-price">15 000 сум</div>
             </div>
-            <div id="cartItemsList"></div>
-            <div style="margin-top: 15px; font-size: 16px; font-weight: bold; text-align: right;" id="cartTotalSum">Итого: 0 сум</div>
-            <button class="checkout-btn" onclick="sendOrder()">Оформить заказ</button>
-        </div>
-    </div>
-
-    <!-- Нижняя навигация -->
-    <div class="bottom-nav">
-        <div class="nav-item active" onclick="toggleCart(false)">
-            <div class="nav-icon">📖</div>
-            <span>Меню</span>
-        </div>
-        <div class="nav-item" onclick="toggleCart(true)">
-            <div class="nav-icon">🛒</div>
-            <span class="badge" id="cartBadge">0</span>
-            <span>Корзина</span>
+            <div class="menu-item">
+                <div class="item-name">Американо</div>
+                <div class="item-price">18 000 сум</div>
+            </div>
+            <div class="menu-item">
+                <div class="item-name">Капучино</div>
+                <div class="item-price">22 000 сум</div>
+            </div>
+            <div class="menu-item">
+                <div class="item-name">Латте</div>
+                <div class="item-price">24 000 сум</div>
+            </div>
+            <div class="menu-item">
+                <div class="item-name">Фирменный Раф</div>
+                <div class="item-price">28 000 сум</div>
+            </div>
         </div>
     </div>
 
@@ -183,218 +306,11 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        let cart = [];
-        let selectedSizes = {};
-
-        const menuData = [
-            {
-                id: 'classic', title: '☕ КЛАССИКА', volumes: '250 ml / 350 ml / 450 ml',
-                items: [
-                    { name: 'Эспрессо', prices: { '250 мл': 20000, '350 мл': 25000 } },
-                    { name: 'Американо', prices: { '250 мл': 20000, '350 мл': 25000 } },
-                    { name: 'Капучинно', prices: { '250 мл': 20000, '350 мл': 25000, '450 мл': 30000 } },
-                    { name: 'Латте', prices: { '250 мл': 20000, '350 мл': 25000, '450 мл': 30000 } },
-                    { name: 'Флет Уайт', prices: { 'Standard': 30000 } },
-                    { name: 'Мокачинно', prices: { '250 мл': 25000, '350 мл': 30000, '450 мл': 40000 } },
-                    { name: 'Макиатто', prices: { '250 мл': 25000, '350 мл': 30000, '450 мл': 40000 } },
-                    { name: 'Раф Сливочный', prices: { '250 мл': 25000, '350 мл': 35000, '450 мл': 45000 } },
-                    { name: 'Какао', prices: { '250 мл': 20000, '350 мл': 25000, '450 мл': 30000 } },
-                    { name: 'Горячий Шоколад', prices: { '250 мл': 20000, '350 мл': 25000, '450 мл': 30000 } },
-                    { name: 'Кофе на безлактозном молоке', prices: { '250 мл': 25000, '350 мл': 30000, '450 мл': 40000 } }
-                ]
-            },
-            {
-                id: 'ice-coffee', title: '🧊 АЙС КОФЕ', volumes: '350 ml / 450 ml',
-                items: [
-                    { name: 'Фраппе Oreo', desc: 'Эспрессо, молоко, лёд, Oreo, сироп Шоколад, сливки', prices: { '350 мл': 35000, '450 мл': 45000 } },
-                    { name: 'Фраппе Chocolate', desc: 'Эспрессо, молоко, лёд, сироп Шоколад, сливки', prices: { '350 мл': 35000, '450 мл': 45000 } },
-                    { name: 'Фраппе Vanilla', desc: 'Эспрессо, молоко, лёд, сироп Ваниль, сливки', prices: { '350 мл': 35000, '450 мл': 45000 } },
-                    { name: 'Эспрессо - Тоник', desc: 'Эспрессо, лёд, тоник, лайм', prices: { '350 мл': 35000, '450 мл': 45000 } },
-                    { name: 'Соленая Карамель', desc: 'Латте с соленой карамелью', prices: { '350 мл': 30000, '450 мл': 40000 } },
-                    { name: 'Фисташковый Соблазн', desc: 'Латте с фисташковым сиропом', prices: { '350 мл': 30000, '450 мл': 40000 } },
-                    { name: 'Айс Американо', desc: 'Эспрессо, холодная вода, лёд', prices: { '350 мл': 25000, '450 мл': 30000 } },
-                    { name: 'Айс Капучино', desc: 'Эспрессо, молоко, лёд', prices: { '350 мл': 25000, '450 мл': 35000 } },
-                    { name: 'Айс Латте', desc: 'Эспрессо, взбитое молоко, лёд', prices: { '350 мл': 25000, '450 мл': 35000 } },
-                    { name: 'Айс Флет Уайт', desc: 'Двойной эспрессо, молоко, лёд', prices: { 'Standard': 35000 } },
-                    { name: 'Айс Латте Кокосовый', desc: 'Эспрессо, кокосовое молоко, стружка, лёд', prices: { '350 мл': 35000, '450 мл': 45000 } },
-                    { name: 'Айс Матча Латте', desc: 'Эспрессо, молоко, матча, лёд', prices: { 'Standard': 45000 } },
-                    { name: 'Кофе Бамбл', prices: { 'Standard': 50000 } }
-                ]
-            },
-            {
-                id: 'refresh', title: '🍹 МОХИТО & КОКТЕЙЛИ', volumes: '300 ml / 500 ml / 700 ml',
-                items: [
-                    { name: 'Мохито Классическое', prices: { '300 мл': 20000, '500 мл': 25000, '700 мл': 35000 } },
-                    { name: 'Клубничный Драйв', prices: { '300 мл': 20000, '500 мл': 25000, '700 мл': 35000 } },
-                    { name: 'Апельсиновый Всплеск', prices: { '300 мл': 20000, '500 мл': 25000, '700 мл': 35000 } },
-                    { name: 'Малиновый Мохито', prices: { '300 мл': 20000, '500 мл': 25000, '700 мл': 35000 } },
-                    { name: 'Арбузный Бум', prices: { '300 мл': 20000, '500 мл': 25000, '700 мл': 35000 } },
-                    { name: 'Смородиновый Заряд', prices: { '300 мл': 20000, '500 мл': 25000, '700 мл': 35000 } },
-                    { name: 'Манго Маракуйя', prices: { '300 мл': 20000, '500 мл': 25000, '700 мл': 35000 } },
-                    { name: 'Окрыляющий Ред Бул', prices: { '500 мл': 50000, '700 мл': 65000 } }
-                ]
-            },
-            {
-                id: 'ice-tea', title: '🍃 АЙС ТИ (Холодный чай)', volumes: '300 ml / 500 ml / 700 ml',
-                items: [
-                    { name: 'Самаркандский Бриз', desc: 'Черный/зеленый чай, лимон, апельсин, мята', prices: { '500 мл': 25000, '700 мл': 35000 } },
-                    { name: 'Яблочный Сад', desc: 'Зеленый чай, яблоко, корица', prices: { '500 мл': 25000, '700 мл': 35000 } },
-                    { name: 'Апельсиновый Айс Ти', desc: 'Зеленый чай, апельсиновый фреш', prices: { '500 мл': 25000, '700 мл': 35000 } },
-                    { name: 'Ягодный Микс', desc: 'Зеленый чай, малина, черника, клубника', prices: { '500 мл': 25000, '700 мл': 35000 } }
-                ]
-            },
-            {
-                id: 'milkshake', title: '🥤 МИЛКШЕЙКИ', volumes: '300 ml / 500 ml / 700 ml',
-                items: [
-                    { name: 'Шоколадный', prices: { '300 мл': 20000, '500 мл': 25000, '700 мл': 35000 } },
-                    { name: 'Банановый', prices: { '300 мл': 20000, '500 мл': 25000, '700 мл': 35000 } },
-                    { name: 'Орео Милкшейк', prices: { '300 мл': 25000, '500 мл': 35000, '700 мл': 45000 } },
-                    { name: 'Баунти', prices: { '300 мл': 25000, '500 мл': 35000, '700 мл': 45000 } },
-                    { name: 'Тирамису Шейк', prices: { '300 мл': 30000, '500 мл': 35000, '700 мл': 45000 } },
-                    { name: 'Нутелла Банан', prices: { '300 мл': 25000, '500 мл': 35000, '700 мл': 45000 } }
-                ]
-            },
-            {
-                id: 'fresh', title: '🍊 ФРЕШИ', volumes: '350 ml / 500 ml / 700 ml',
-                items: [
-                    { name: 'Апельсиновый Фреш', prices: { '350 мл': 45000, '500 мл': 55000, '700 мл': 75000 } },
-                    { name: 'Яблочный Фреш', prices: { '350 мл': 25000, '500 мл': 35000, '700 мл': 45000 } }
-                ]
-            },
-            {
-                id: 'add', title: '➕ ДОБАВКИ', volumes: 'Фиксированная цена',
-                items: [
-                    { name: 'Сироп / Топпинг / Мята / Лимон / Мед / Собойница', prices: { 'Порция': 5000 } }
-                ]
-            }
-        ];
-
-        const menuContainer = document.getElementById('menuList');
-
-        menuData.forEach((sec, sIdx) => {
-            let html = `<div id="${sec.id}"><div class="section-title">${sec.title} <span class="section-volumes">${sec.volumes}</span></div>`;
-            sec.items.forEach((item, iIdx) => {
-                const sizes = Object.keys(item.prices);
-                const defaultSize = sizes[0];
-                const defaultPrice = item.prices[defaultSize];
-                selectedSizes[`${sIdx}-${iIdx}`] = defaultSize;
-
-                html += `
-                <div class="item-card">
-                    <div class="item-header"><div class="item-name">${item.name}</div></div>
-                    ${item.desc ? `<div class="item-desc">${item.desc}</div>` : ''}
-                    ${sizes.length > 1 ? `
-                    <div class="size-selector">
-                        ${sizes.map((sz, idx) => `
-                            <div class="size-btn ${idx === 0 ? 'active' : ''}" 
-                                 onclick="selectSize(${sIdx}, ${iIdx}, '${sz}', ${item.prices[sz]}, this)">
-                                ${sz}
-                            </div>
-                        `).join('')}
-                    </div>` : ''}
-                    <div class="item-footer">
-                        <div class="item-price" id="price-${sIdx}-${iIdx}">${defaultPrice.toLocaleString()} сум</div>
-                        <button class="add-btn" onclick="addToCart('${item.name}', ${sIdx}, ${iIdx})">+ В корзину</button>
-                    </div>
-                </div>`;
-            });
-            html += `</div>`;
-            menuContainer.innerHTML += html;
-        });
-
-        function selectSize(sIdx, iIdx, size, price, btn) {
-            btn.parentElement.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            selectedSizes[`${sIdx}-${iIdx}`] = size;
-            document.getElementById(`price-${sIdx}-${iIdx}`).innerText = price.toLocaleString() + ' сум';
-        }
-
-        function addToCart(name, sIdx, iIdx) {
-            const size = selectedSizes[`${sIdx}-${iIdx}`];
-            const price = menuData[sIdx].items[iIdx].prices[size];
-
-            const existing = cart.find(c => c.name === name && c.size === size);
-            if (existing) {
-                existing.qty++;
-            } else {
-                cart.push({ name, size, price, qty: 1 });
-            }
-            tg.HapticFeedback.impactOccurred('light');
-            updateCartBadge();
-        }
-
-        function updateCartBadge() {
-            const totalQty = cart.reduce((acc, c) => acc + c.qty, 0);
-            const badge = document.getElementById('cartBadge');
-            if (totalQty > 0) {
-                badge.innerText = totalQty;
-                badge.style.display = 'inline-block';
-            } else {
-                badge.style.display = 'none';
-            }
-        }
-
-        function toggleCart(show) {
-            const modal = document.getElementById('cartModal');
-            if (show === undefined) show = modal.style.display !== 'flex';
-            modal.style.display = show ? 'flex' : 'none';
-            if (show) renderCartModal();
-        }
-
-        function renderCartModal() {
-            const list = document.getElementById('cartItemsList');
-            const totalEl = document.getElementById('cartTotalSum');
-            if (cart.length === 0) {
-                list.innerHTML = '<div style="text-align:center; color:#777; padding:20px;">Ваша корзина пуста ☕</div>';
-                totalEl.innerText = 'Итого: 0 сум';
-                return;
-            }
-
-            let html = '';
-            let total = 0;
-            cart.forEach((item, idx) => {
-                const itemTotal = item.price * item.qty;
-                total += itemTotal;
-                html += `
-                <div class="cart-item">
-                    <div>
-                        <div class="cart-item-info">${item.name}</div>
-                        <div class="cart-item-size">${item.size} • ${item.price.toLocaleString()} сум</div>
-                    </div>
-                    <div class="cart-controls">
-                        <div class="btn-qty" onclick="changeQty(${idx}, -1)">-</div>
-                        <span>${item.qty}</span>
-                        <div class="btn-qty" onclick="changeQty(${idx}, 1)">+</div>
-                    </div>
-                </div>`;
-            });
-            list.innerHTML = html;
-            totalEl.innerText = `Итого: ${total.toLocaleString()} сум`;
-        }
-
-        function changeQty(idx, change) {
-            cart[idx].qty += change;
-            if (cart[idx].qty <= 0) cart.splice(idx, 1);
-            updateCartBadge();
-            renderCartModal();
-        }
-
-        function sendOrder() {
-            if (cart.length === 0) return;
-            tg.sendData(JSON.stringify({ type: 'order', cart }));
-            tg.close();
-        }
-
-        function scrollToCat(id) {
-            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
-            const el = document.getElementById(id);
-            if (el) el.scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // Штампы
+        // Получаем параметры из URL (?stamps=X)
         const urlParams = new URLSearchParams(window.location.search);
         const stamps = parseInt(urlParams.get('stamps')) || 0;
+
+        // Расставляем штампы
         for (let i = 1; i <= 6; i++) {
             const stampEl = document.getElementById(`s${i}`);
             if (i <= stamps) {
@@ -405,11 +321,13 @@
                 stampEl.innerText = '⚪';
             }
         }
+
+        // Выводим корректный текст
         const progressEl = document.getElementById('progressText');
         if (stamps >= 6) {
             progressEl.innerHTML = '🎁 <b>У вас есть бесплатный напиток!</b>';
         } else {
-            progressEl.innerHTML = `Куплено ${stamps} из 6 кофе для получения подарка 🎁`;
+            progressEl.innerHTML = `Куплено <b>${stamps} из 6</b> кофе для получения подарка 🎁`;
         }
     </script>
 </body>
