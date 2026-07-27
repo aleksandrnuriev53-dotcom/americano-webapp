@@ -122,7 +122,7 @@
             color: var(--text-muted);
         }
 
-        /* CATEGORIES WITH PHOTOS & GLOW */
+        /* CATEGORIES */
         .categories-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -230,7 +230,7 @@
             text-shadow: 0 0 10px var(--accent-glow);
         }
 
-        /* SIZE SELECTOR BUTTONS */
+        /* SIZE SELECTOR SPANS (КЛИКАБЕЛЬНЫЕ) */
         .size-selector {
             display: flex;
             gap: 8px;
@@ -241,20 +241,22 @@
             border: 1px solid rgba(255,255,255,0.05);
         }
 
-        .size-btn {
+        .size-pill {
             flex: 1;
-            padding: 8px 0;
+            padding: 10px 0;
             border-radius: 8px;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 700;
             color: var(--text-muted);
             background: transparent;
-            border: none;
+            text-align: center;
             cursor: pointer;
-            transition: all 0.25s ease;
+            user-select: none;
+            -webkit-user-select: none;
+            transition: all 0.2s ease;
         }
 
-        .size-btn.active {
+        .size-pill.active {
             background: linear-gradient(135deg, #e6b87d 0%, #c49354 100%);
             color: #0f0c0a;
             box-shadow: 0 2px 10px var(--accent-glow);
@@ -470,7 +472,6 @@
             }
         };
 
-        // Храним выбранный вариант размера для каждого напитка отдельно
         let selectedVariants = {};
         let cart = [];
 
@@ -496,35 +497,35 @@
             progressEl.innerHTML = `Куплено <b>${stamps} из 6</b> кофе для получения подарка 🎁`;
         }
 
-        // Переключение размера кнопки
-        function selectSize(catKey, itemIdx, vIdx) {
+        // КЛИК ПО ВАРИАНТУ ОБЪЕМА
+        function selectSize(catKey, itemIdx, vIdx, targetEl) {
             if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('selectionChanged');
             
             selectedVariants[`${catKey}_${itemIdx}`] = vIdx;
 
-            // Обновляем активную кнопку визуально
-            const container = document.getElementById(`sizes_${catKey}_${itemIdx}`);
-            if (container) {
-                const buttons = container.querySelectorAll('.size-btn');
-                buttons.forEach((btn, idx) => {
+            // Снимаем активный класс у соседних элементов в той же карточке
+            const parent = targetEl.parentElement;
+            if (parent) {
+                const pills = parent.querySelectorAll('.size-pill');
+                pills.forEach((p, idx) => {
                     if (idx === vIdx) {
-                        btn.classList.add('active');
+                        p.classList.add('active');
                     } else {
-                        btn.classList.remove('active');
+                        p.classList.remove('active');
                     }
                 });
             }
 
-            // Вызываем мгновенный пересчет стоимости
+            // Сразу пересчитываем общую цену карточки
             updatePrice(catKey, itemIdx);
         }
 
-        // Прямой мгновенный пересчет цены
+        // ОБНОВЛЕНИЕ ЦЕНЫ НА КАРТОЧКЕ
         function updatePrice(catKey, itemIdx) {
             const item = MENU[catKey].items[itemIdx];
             const priceEl = document.getElementById(`price_${catKey}_${itemIdx}`);
             
-            const variantIdx = selectedVariants[`${catKey}_${itemIdx}`] || 0;
+            const variantIdx = selectedVariants[`${catKey}_${itemIdx}`] !== undefined ? selectedVariants[`${catKey}_${itemIdx}`] : 0;
             const basePrice = item.variants[variantIdx] ? item.variants[variantIdx].price : item.variants[0].price;
 
             const addonSelect = document.getElementById(`addon_${catKey}_${itemIdx}`);
@@ -550,7 +551,6 @@
             drinksList.innerHTML = '';
 
             categoryData.items.forEach((item, itemIdx) => {
-                // По умолчанию выбираем первый вариант (индекс 0)
                 selectedVariants[`${key}_${itemIdx}`] = 0;
 
                 const drinkEl = document.createElement('div');
@@ -560,13 +560,12 @@
 
                 let sizesHtml = '';
                 if (item.variants.length > 1) {
-                    sizesHtml = `<div class="size-selector" id="sizes_${key}_${itemIdx}">` + 
+                    sizesHtml = `<div class="size-selector">` + 
                         item.variants.map((v, vIdx) => `
-                            <button type="button" 
-                                    class="size-btn ${vIdx === 0 ? 'active' : ''}" 
-                                    onclick="selectSize('${key}', ${itemIdx}, ${vIdx})">
+                            <span class="size-pill ${vIdx === 0 ? 'active' : ''}" 
+                                  onclick="selectSize('${key}', ${itemIdx}, ${vIdx}, this)">
                                 ${v.size}
-                            </button>
+                            </span>
                         `).join('') + 
                     `</div>`;
                 }
@@ -607,7 +606,7 @@
 
             const item = MENU[catKey].items[itemIdx];
             
-            const variantIdx = selectedVariants[`${catKey}_${itemIdx}`] || 0;
+            const variantIdx = selectedVariants[`${catKey}_${itemIdx}`] !== undefined ? selectedVariants[`${catKey}_${itemIdx}`] : 0;
             const selectedVariant = item.variants[variantIdx];
 
             const addonSelect = document.getElementById(`addon_${catKey}_${itemIdx}`);
