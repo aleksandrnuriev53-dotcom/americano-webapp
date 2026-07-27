@@ -18,13 +18,12 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             margin: 0;
             padding: 16px;
-            padding-bottom: 24px;
+            padding-bottom: 90px;
             position: relative;
             min-height: 100vh;
             overflow-x: hidden;
         }
 
-        /* Бежевое свечение сверху */
         body::before {
             content: '';
             position: fixed;
@@ -39,7 +38,6 @@
             z-index: 0;
         }
 
-        /* Мягкое свечение снизу справа */
         body::after {
             content: '';
             position: fixed;
@@ -90,7 +88,7 @@
             padding: 20px;
             margin-bottom: 24px;
             text-align: center;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
         }
 
         .card-title {
@@ -98,7 +96,6 @@
             font-weight: 600;
             color: #f1e5d8;
             margin-bottom: 16px;
-            letter-spacing: 0.5px;
         }
 
         .stamps-container {
@@ -132,15 +129,15 @@
             color: #c5bbb0;
         }
 
-        /* --- РАЗДЕЛ КАТЕГОРИЙ --- */
+        /* --- КАТЕГОРИИ --- */
         .section-header {
             font-size: 18px;
             font-weight: 700;
             color: #f1e5d8;
             margin-bottom: 14px;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 8px;
         }
 
         .categories-grid {
@@ -159,16 +156,14 @@
             border: 1px solid rgba(226, 168, 114, 0.2);
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
             cursor: pointer;
-            transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+            transition: transform 0.15s ease, border-color 0.15s ease;
             display: flex;
             align-items: flex-end;
-            user-select: none;
         }
 
         .category-card:active {
             transform: scale(0.95);
             border-color: #e2a872;
-            box-shadow: 0 0 15px rgba(226, 168, 114, 0.4);
         }
 
         .category-overlay {
@@ -185,14 +180,89 @@
             font-size: 15px;
             color: #ffffff;
             text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-            line-height: 1.2;
+        }
+
+        /* --- ЭКРАН НАПИТКОВ --- */
+        #drinksView {
+            display: none;
+        }
+
+        .back-btn {
+            background: rgba(226, 168, 114, 0.15);
+            border: 1px solid rgba(226, 168, 114, 0.4);
+            color: #e2a872;
+            padding: 8px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+
+        .menu-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .drink-item {
+            background: rgba(35, 30, 26, 0.7);
+            border: 1px solid rgba(226, 168, 114, 0.15);
+            border-radius: 16px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .drink-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .drink-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .drink-price {
+            font-size: 15px;
+            font-weight: 700;
+            color: #e2a872;
+        }
+
+        .drink-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 4px;
+        }
+
+        .add-btn {
+            background: #e2a872;
+            color: #12100e;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .add-btn:active {
+            transform: scale(0.96);
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <!-- Заголовок -->
+        <!-- Шапка -->
         <div class="header">
             <div class="title">☕ AMERICANO</div>
             <div class="subtitle">3 филиала • Каждый 7-й кофе бесплатно</div>
@@ -212,28 +282,40 @@
             <div class="progress-text" id="progressText">Загрузка данных карты...</div>
         </div>
 
-        <!-- Категории меню -->
-        <div class="section-header">📁 Категории меню</div>
-        
-        <div class="categories-grid">
-            <div class="category-card" onclick="selectCategory('🔥 Горячие напитки')" style="background-image: url('https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=400&auto=format&fit=crop');">
-                <div class="category-overlay"></div>
-                <div class="category-title">🔥 Горячие напитки</div>
-            </div>
+        <!-- ЭКРАН 1: КАТЕГОРИИ -->
+        <div id="categoriesView">
+            <div class="section-header">📁 Выберите категорию</div>
+            
+            <div class="categories-grid">
+                <div class="category-card" onclick="openCategory('hot')" style="background-image: url('https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=400&auto=format&fit=crop');">
+                    <div class="category-overlay"></div>
+                    <div class="category-title">🔥 Горячие напитки</div>
+                </div>
 
-            <div class="category-card" onclick="selectCategory('🧊 Холодные напитки')" style="background-image: url('https://images.unsplash.com/photo-1517701604599-bb29b565090c?q=80&w=400&auto=format&fit=crop');">
-                <div class="category-overlay"></div>
-                <div class="category-title">🧊 Холодные напитки</div>
-            </div>
+                <div class="category-card" onclick="openCategory('cold')" style="background-image: url('https://images.unsplash.com/photo-1517701604599-bb29b565090c?q=80&w=400&auto=format&fit=crop');">
+                    <div class="category-overlay"></div>
+                    <div class="category-title">🧊 Холодные напитки</div>
+                </div>
 
-            <div class="category-card" onclick="selectCategory('🍹 Лимонады & Смузи')" style="background-image: url('https://images.unsplash.com/photo-1551024709-8f23befc6f87?q=80&w=400&auto=format&fit=crop');">
-                <div class="category-overlay"></div>
-                <div class="category-title">🍹 Лимонады & Смузи</div>
-            </div>
+                <div class="category-card" onclick="openCategory('smoothies')" style="background-image: url('https://images.unsplash.com/photo-1551024709-8f23befc6f87?q=80&w=400&auto=format&fit=crop');">
+                    <div class="category-overlay"></div>
+                    <div class="category-title">🍹 Лимонады & Смузи</div>
+                </div>
 
-            <div class="category-card" onclick="selectCategory('🥐 Десерты & Выпечка')" style="background-image: url('https://images.unsplash.com/photo-1555507036-ab1f4038808a?q=80&w=400&auto=format&fit=crop');">
-                <div class="category-overlay"></div>
-                <div class="category-title">🥐 Десерты & Выпечка</div>
+                <div class="category-card" onclick="openCategory('bakery')" style="background-image: url('https://images.unsplash.com/photo-1555507036-ab1f4038808a?q=80&w=400&auto=format&fit=crop');">
+                    <div class="category-overlay"></div>
+                    <div class="category-title">🥐 Десерты & Выпечка</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ЭКРАН 2: СПИСОК НАПИТКОВ -->
+        <div id="drinksView">
+            <button class="back-btn" onclick="showCategories()">← К категориям</button>
+            <div class="section-header" id="categoryTitle">🔥 Горячие напитки</div>
+            
+            <div class="menu-list" id="drinksList">
+                <!-- Напитки будут подгружаться динамически -->
             </div>
         </div>
     </div>
@@ -242,11 +324,51 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Получаем параметры из URL (?stamps=X)
+        // База данных напитков по категориям
+        const MENU = {
+            hot: {
+                title: '🔥 Горячие напитки',
+                items: [
+                    { name: 'Эспрессо', price: 15000, size: '0.2 л' },
+                    { name: 'Американо', price: 18000, size: '0.3 л' },
+                    { name: 'Капучино', price: 22000, size: '0.3 л' },
+                    { name: 'Латте', price: 24000, size: '0.3 л' },
+                    { name: 'Фирменный Раф', price: 28000, size: '0.3 л' }
+                ]
+            },
+            cold: {
+                title: '🧊 Холодные напитки',
+                items: [
+                    { name: 'Айс Айс Латте', price: 26000, size: '0.4 л' },
+                    { name: 'Айс Американо', price: 20000, size: '0.4 л' },
+                    { name: 'Бамбл Кофе', price: 30000, size: '0.4 л' },
+                    { name: 'Эспрессо Тоник', price: 28000, size: '0.4 л' }
+                ]
+            },
+            smoothies: {
+                title: '🍹 Лимонады & Смузи',
+                items: [
+                    { name: 'Лимонад Классический', price: 22000, size: '0.4 л' },
+                    { name: 'Лимонад Маракуйя-Яблоко', price: 25000, size: '0.4 л' },
+                    { name: 'Смузи Клубника-Банан', price: 28000, size: '0.4 л' }
+                ]
+            },
+            bakery: {
+                title: '🥐 Десерты & Выпечка',
+                items: [
+                    { name: 'Круассан классический', price: 15000, size: '1 шт' },
+                    { name: 'Чизкейк Нью-Йорк', price: 28000, size: '1 шт' },
+                    { name: 'Печенье Кукис', price: 12000, size: '1 шт' }
+                ]
+            }
+        };
+
+        let cart = [];
+
+        // Карта лояльности
         const urlParams = new URLSearchParams(window.location.search);
         const stamps = parseInt(urlParams.get('stamps')) || 0;
 
-        // Расставляем штампы
         for (let i = 1; i <= 6; i++) {
             const stampEl = document.getElementById(`s${i}`);
             if (i <= stamps) {
@@ -258,7 +380,6 @@
             }
         }
 
-        // Выводим текст лояльности
         const progressEl = document.getElementById('progressText');
         if (stamps >= 6) {
             progressEl.innerHTML = '🎁 <b>У вас есть бесплатный напиток!</b>';
@@ -266,13 +387,81 @@
             progressEl.innerHTML = `Куплено <b>${stamps} из 6</b> кофе для получения подарка 🎁`;
         }
 
-        // Обработка клика по категории
-        function selectCategory(categoryName) {
-            if (tg.HapticFeedback) {
-                tg.HapticFeedback.impactOccurred('medium'); // Легкая вибрация при нажатии
-            }
-            tg.sendData(JSON.stringify({ category: categoryName }));
+        // Логика навигации
+        function openCategory(key) {
+            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+
+            const categoryData = MENU[key];
+            document.getElementById('categoryTitle').innerText = categoryData.title;
+
+            const drinksList = document.getElementById('drinksList');
+            drinksList.innerHTML = '';
+
+            categoryData.items.forEach((item, index) => {
+                const drinkEl = document.createElement('div');
+                drinkEl.className = 'drink-item';
+                drinkEl.innerHTML = `
+                    <div class="drink-header">
+                        <div class="drink-name">${item.name}</div>
+                        <div class="drink-price">${item.price.toLocaleString('ru-RU')} сум</div>
+                    </div>
+                    <div class="drink-controls">
+                        <span style="font-size: 12px; color: #aaa;">Объем: ${item.size}</span>
+                        <button class="add-btn" onclick="addToCart('${item.name}', ${item.price}, '${item.size}')">+ В корзину</button>
+                    </div>
+                `;
+                drinksList.appendChild(drinkEl);
+            });
+
+            document.getElementById('categoriesView').style.display = 'none';
+            document.getElementById('drinksView').style.display = 'block';
+
+            // Включаем системную кнопку "Назад" в Telegram
+            tg.BackButton.show();
+            tg.BackButton.onClick(showCategories);
         }
+
+        function showCategories() {
+            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+            document.getElementById('drinksView').style.display = 'none';
+            document.getElementById('categoriesView').style.display = 'block';
+            tg.BackButton.hide();
+        }
+
+        // Корзина и отправка заказа
+        function addToCart(name, price, size) {
+            if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            
+            const existing = cart.find(i => i.name === name && i.size === size);
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({ name, price, size, qty: 1 });
+            }
+
+            updateMainButton();
+        }
+
+        function updateMainButton() {
+            if (cart.length === 0) {
+                tg.MainButton.hide();
+                return;
+            }
+
+            const totalSum = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const totalCount = cart.reduce((sum, item) => sum + item.qty, 0);
+
+            tg.MainButton.setText(`Заказать (${totalCount}) • ${totalSum.toLocaleString('ru-RU')} сум`);
+            tg.MainButton.show();
+        }
+
+        tg.MainButton.onClick(() => {
+            if (cart.length === 0) return;
+            tg.sendData(JSON.stringify({
+                type: 'order',
+                cart: cart
+            }));
+        });
     </script>
 </body>
 </html>
