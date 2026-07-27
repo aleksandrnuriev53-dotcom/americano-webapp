@@ -207,8 +207,8 @@
             padding: 16px;
             margin-bottom: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 1;
         }
 
         .drink-header {
@@ -230,15 +230,17 @@
             text-shadow: 0 0 10px var(--accent-glow);
         }
 
-        /* SIZE SELECTOR SPANS (КЛИКАБЕЛЬНЫЕ) */
+        /* SIZE SELECTOR С ПРАВИЛЬНЫМ Z-INDEX */
         .size-selector {
             display: flex;
             gap: 8px;
             margin-bottom: 12px;
-            background: rgba(0,0,0,0.3);
+            background: rgba(0,0,0,0.4);
             padding: 4px;
             border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            position: relative;
+            z-index: 10;
         }
 
         .size-pill {
@@ -253,6 +255,7 @@
             cursor: pointer;
             user-select: none;
             -webkit-user-select: none;
+            touch-action: manipulation;
             transition: all 0.2s ease;
         }
 
@@ -272,6 +275,8 @@
             font-size: 12px;
             margin-bottom: 12px;
             outline: none;
+            position: relative;
+            z-index: 5;
         }
 
         .add-btn {
@@ -286,6 +291,8 @@
             cursor: pointer;
             box-shadow: 0 4px 15px var(--accent-glow);
             transition: all 0.2s ease;
+            position: relative;
+            z-index: 5;
         }
 
         .add-btn:active {
@@ -497,13 +504,12 @@
             progressEl.innerHTML = `Куплено <b>${stamps} из 6</b> кофе для получения подарка 🎁`;
         }
 
-        // КЛИК ПО ВАРИАНТУ ОБЪЕМА
+        // ОБРАБОТЧИК КЛИКА С ПОДДЕРЖКОЙ ТАЧ-СОБЫТИЙ
         function selectSize(catKey, itemIdx, vIdx, targetEl) {
             if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('selectionChanged');
             
             selectedVariants[`${catKey}_${itemIdx}`] = vIdx;
 
-            // Снимаем активный класс у соседних элементов в той же карточке
             const parent = targetEl.parentElement;
             if (parent) {
                 const pills = parent.querySelectorAll('.size-pill');
@@ -516,11 +522,9 @@
                 });
             }
 
-            // Сразу пересчитываем общую цену карточки
             updatePrice(catKey, itemIdx);
         }
 
-        // ОБНОВЛЕНИЕ ЦЕНЫ НА КАРТОЧКЕ
         function updatePrice(catKey, itemIdx) {
             const item = MENU[catKey].items[itemIdx];
             const priceEl = document.getElementById(`price_${catKey}_${itemIdx}`);
@@ -563,7 +567,7 @@
                     sizesHtml = `<div class="size-selector">` + 
                         item.variants.map((v, vIdx) => `
                             <span class="size-pill ${vIdx === 0 ? 'active' : ''}" 
-                                  onclick="selectSize('${key}', ${itemIdx}, ${vIdx}, this)">
+                                  onpointerdown="selectSize('${key}', ${itemIdx}, ${vIdx}, this)">
                                 ${v.size}
                             </span>
                         `).join('') + 
