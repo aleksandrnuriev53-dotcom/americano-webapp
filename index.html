@@ -3,198 +3,242 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Americano Coffee</title>
+    <title>Americano Special Bar</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: #1a1512;
-            --card-bg: #26201b;
-            --accent-color: #d4a373;
-            --accent-hover: #faedcd;
+            --bg-color: #0f0c0a;
+            --card-bg: rgba(28, 23, 19, 0.75);
+            --card-border: rgba(212, 163, 115, 0.15);
+            --accent-gold: #e6b87d;
+            --accent-glow: rgba(230, 184, 125, 0.35);
             --text-main: #fefae0;
-            --text-muted: #a39171;
-            --border-color: #3d322a;
+            --text-muted: #9c8c7c;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background-color: var(--bg-color);
+            background: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(212, 163, 115, 0.12) 0%, transparent 60%),
+                radial-gradient(circle at 100% 100%, rgba(180, 100, 50, 0.08) 0%, transparent 50%);
             color: var(--text-main);
-            padding: 12px;
-            padding-bottom: 80px;
+            padding: 14px;
+            padding-bottom: 90px;
+            min-height: 100vh;
         }
 
-        /* HEADER & LOYALTY CARD */
+        /* PREMIUM HEADER */
         .header {
             text-align: center;
-            margin-bottom: 16px;
+            margin-bottom: 18px;
+            position: relative;
         }
 
         .brand-title {
-            font-size: 22px;
-            font-weight: 800;
-            letter-spacing: 1.5px;
-            color: var(--accent-color);
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #fff 0%, var(--accent-gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             text-transform: uppercase;
+            text-shadow: 0 0 20px var(--accent-glow);
         }
 
         .brand-subtitle {
             font-size: 11px;
             color: var(--text-muted);
-            margin-top: 2px;
+            margin-top: 4px;
+            letter-spacing: 0.5px;
         }
 
+        /* LOYALTY CARD WITH GLOW */
         .loyalty-card {
-            background: linear-gradient(145deg, #2a221c, #1f1915);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 14px;
-            margin-bottom: 20px;
+            background: linear-gradient(135deg, rgba(35, 28, 23, 0.9) 0%, rgba(20, 16, 13, 0.95) 100%);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 22px;
             text-align: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .loyalty-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
         }
 
         .loyalty-title {
             font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: var(--text-main);
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .stamps-grid {
             display: flex;
             justify-content: center;
-            gap: 8px;
-            margin-bottom: 10px;
+            gap: 10px;
+            margin-bottom: 12px;
         }
 
         .stamp {
-            width: 38px;
-            height: 38px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            border: 2px dashed var(--text-muted);
+            border: 1px solid rgba(212, 163, 115, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
-            background: rgba(0,0,0,0.2);
-            transition: all 0.3s ease;
+            font-size: 18px;
+            background: rgba(0,0,0,0.4);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .stamp.active {
-            border: 2px solid var(--accent-color);
-            background: var(--accent-color);
-            box-shadow: 0 0 10px rgba(212, 163, 115, 0.4);
+            border-color: var(--accent-gold);
+            background: linear-gradient(135deg, #e6b87d 0%, #b8860b 100%);
+            box-shadow: 0 0 15px var(--accent-glow);
+            transform: scale(1.08);
         }
 
         .loyalty-progress {
-            font-size: 11px;
+            font-size: 12px;
             color: var(--text-muted);
         }
 
-        .loyalty-progress b {
-            color: var(--accent-color);
-        }
-
-        /* CATEGORIES LIST */
+        /* CATEGORY GRID */
         .categories-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
         }
 
         .category-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 14px;
-            padding: 16px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 16px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
-            transition: transform 0.1s ease, border-color 0.2s ease;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            backdrop-filter: blur(8px);
+            transition: all 0.2s ease;
         }
 
         .category-card:active {
-            transform: scale(0.98);
-            border-color: var(--accent-color);
+            transform: scale(0.97);
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 15px var(--accent-glow);
         }
 
         .category-name {
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 700;
+            color: var(--text-main);
         }
 
         .category-arrow {
-            color: var(--accent-color);
-            font-size: 18px;
+            color: var(--accent-gold);
+            font-size: 20px;
+            transition: transform 0.2s ease;
         }
 
         /* DRINKS VIEW */
         .back-btn {
-            background: none;
-            border: none;
-            color: var(--accent-color);
-            font-size: 14px;
-            font-weight: 600;
+            background: rgba(212, 163, 115, 0.1);
+            border: 1px solid var(--card-border);
+            color: var(--accent-gold);
+            font-size: 13px;
+            font-weight: 700;
+            padding: 8px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-bottom: 16px;
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            cursor: pointer;
-            margin-bottom: 12px;
-            padding: 4px 0;
         }
 
         .view-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 14px;
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 16px;
             color: var(--text-main);
         }
 
-        .drinks-list {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
+        .drink-item {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 14px;
+            margin-bottom: 16px;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.4);
+            backdrop-filter: blur(10px);
         }
 
-        .drink-item {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
+        .drink-image-container {
+            width: 100%;
+            height: 160px;
             border-radius: 14px;
-            padding: 14px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            position: relative;
+            background: rgba(0,0,0,0.5);
+        }
+
+        .drink-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
         }
 
         .drink-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
         .drink-name {
-            font-size: 15px;
-            font-weight: 700;
+            font-size: 16px;
+            font-weight: 800;
         }
 
         .drink-price {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--accent-color);
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--accent-gold);
+            text-shadow: 0 0 10px var(--accent-glow);
         }
 
         /* SIZE SELECTOR BUTTONS */
         .size-selector {
             display: flex;
             gap: 8px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            background: rgba(0,0,0,0.3);
+            padding: 4px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
         }
 
         .size-option {
@@ -213,57 +257,48 @@
         .size-option label {
             display: block;
             text-align: center;
-            padding: 8px 4px;
-            background-color: rgba(0,0,0,0.3);
-            border: 1px solid var(--border-color);
+            padding: 8px 0;
             border-radius: 8px;
             font-size: 12px;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--text-muted);
-            transition: all 0.2s ease;
+            transition: all 0.25s ease;
         }
 
         .size-option input:checked + label {
-            background-color: var(--accent-color);
-            border-color: var(--accent-color);
-            color: #1a1512;
-            font-weight: 700;
+            background: linear-gradient(135deg, #e6b87d 0%, #c49354 100%);
+            color: #0f0c0a;
+            box-shadow: 0 2px 10px var(--accent-glow);
         }
 
-        /* ADDON SELECT */
         .addon-select {
             width: 100%;
-            background-color: rgba(0,0,0,0.3);
-            border: 1px solid var(--border-color);
+            background: rgba(0,0,0,0.4);
+            border: 1px solid var(--card-border);
             color: var(--text-main);
-            padding: 10px;
-            border-radius: 8px;
+            padding: 10px 12px;
+            border-radius: 10px;
             font-size: 12px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             outline: none;
         }
 
-        .addon-select option {
-            background-color: var(--card-bg);
-            color: var(--text-main);
-        }
-
-        /* ADD BUTTON */
         .add-btn {
             width: 100%;
-            background-color: var(--accent-color);
-            color: #1a1512;
+            background: linear-gradient(135deg, #e6b87d 0%, #b8860b 100%);
+            color: #0f0c0a;
             border: none;
-            padding: 10px;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 13px;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 14px;
             cursor: pointer;
-            transition: background 0.2s ease;
+            box-shadow: 0 4px 15px var(--accent-glow);
+            transition: all 0.2s ease;
         }
 
         .add-btn:active {
-            background-color: var(--accent-hover);
+            transform: scale(0.98);
         }
     </style>
 </head>
@@ -271,12 +306,12 @@
 
     <div class="header">
         <div class="brand-title">☕ AMERICANO</div>
-        <div class="brand-subtitle">3 филиала • Каждый 7-й кофе бесплатно</div>
+        <div class="brand-subtitle">PREMIUM COFFEE & DRINKS</div>
     </div>
 
     <!-- LOYALTY CARD -->
     <div class="loyalty-card">
-        <div class="loyalty-title">Ваша карта лояльности</div>
+        <div class="loyalty-title">Карта Лояльности</div>
         <div class="stamps-grid">
             <div class="stamp" id="s1">⚪</div>
             <div class="stamp" id="s2">⚪</div>
@@ -292,7 +327,7 @@
     <div id="categoriesView">
         <div class="categories-grid">
             <div class="category-card" onclick="openCategory('classic')">
-                <span class="category-name">☕ Классика</span>
+                <span class="category-name">☕ Классический Кофе</span>
                 <span class="category-arrow">➔</span>
             </div>
             <div class="category-card" onclick="openCategory('iced')">
@@ -300,7 +335,7 @@
                 <span class="category-arrow">➔</span>
             </div>
             <div class="category-card" onclick="openCategory('mojito')">
-                <span class="category-name">🍹 Мохито & Прохладительные</span>
+                <span class="category-name">🍹 Мохито & Лимонады</span>
                 <span class="category-arrow">➔</span>
             </div>
             <div class="category-card" onclick="openCategory('icetea')">
@@ -345,95 +380,56 @@
             "➕ Собойница (+5k)"
         ];
 
+        // Качественные сочные фото для категорий
+        const DEFAULT_IMG = "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=600&q=80";
+
         const MENU = {
             classic: {
                 title: '☕ Классика',
                 items: [
-                    { name: 'Эспрессо', variants: [{ size: '250 ml', price: 20000 }, { size: '350 ml', price: 25000 }] },
-                    { name: 'Американо', variants: [{ size: '250 ml', price: 20000 }, { size: '350 ml', price: 25000 }] },
-                    { name: 'Капучинно', variants: [{ size: '250 ml', price: 20000 }, { size: '350 ml', price: 25000 }, { size: '450 ml', price: 30000 }] },
-                    { name: 'Латте', variants: [{ size: '250 ml', price: 20000 }, { size: '350 ml', price: 25000 }, { size: '450 ml', price: 30000 }] },
-                    { name: 'Флет Уайт', variants: [{ size: '350 ml', price: 30000 }] },
-                    { name: 'Мокачинно', variants: [{ size: '250 ml', price: 25000 }, { size: '350 ml', price: 30000 }, { size: '450 ml', price: 40000 }] },
-                    { name: 'Макиатто', variants: [{ size: '250 ml', price: 25000 }, { size: '350 ml', price: 30000 }, { size: '450 ml', price: 40000 }] },
-                    { name: 'Раф Сливочный', variants: [{ size: '250 ml', price: 25000 }, { size: '350 ml', price: 35000 }, { size: '450 ml', price: 45000 }] },
-                    { name: 'Какао', variants: [{ size: '250 ml', price: 20000 }, { size: '350 ml', price: 25000 }, { size: '450 ml', price: 30000 }] },
-                    { name: 'Горячий Шоколад', variants: [{ size: '250 ml', price: 20000 }, { size: '350 ml', price: 25000 }, { size: '450 ml', price: 30000 }] },
-                    { name: 'Кофе на безлактозном молоке', variants: [{ size: '250 ml', price: 25000 }, { size: '350 ml', price: 30000 }, { size: '450 ml', price: 40000 }] }
+                    { name: 'Эспрессо', img: 'https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=600&q=80', variants: [{ size: '250 ml', price: 20000 }, { size: '350 ml', price: 25000 }] },
+                    { name: 'Американо', img: 'https://images.unsplash.com/photo-1551033406-611cf9a28f67?w=600&q=80', variants: [{ size: '250 ml', price: 20000 }, { size: '350 ml', price: 25000 }] },
+                    { name: 'Капучинно', img: 'https://images.unsplash.com/photo-1534778101976-62847782c213?w=600&q=80', variants: [{ size: '250 ml', price: 20000 }, { size: '350 ml', price: 25000 }, { size: '450 ml', price: 30000 }] },
+                    { name: 'Латте', img: 'https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?w=600&q=80', variants: [{ size: '250 ml', price: 20000 }, { size: '350 ml', price: 25000 }, { size: '450 ml', price: 30000 }] },
+                    { name: 'Флет Уайт', img: 'https://images.unsplash.com/photo-1577968897966-3d4325b36b61?w=600&q=80', variants: [{ size: '350 ml', price: 30000 }] },
+                    { name: 'Раф Сливочный', img: 'https://images.unsplash.com/photo-1541167760496-1628856ab772?w=600&q=80', variants: [{ size: '250 ml', price: 25000 }, { size: '350 ml', price: 35000 }, { size: '450 ml', price: 45000 }] }
                 ]
             },
             iced: {
                 title: '🧊 Айс Кофе',
                 items: [
-                    { name: 'Фраппе Oreo', variants: [{ size: '350 ml', price: 35000 }, { size: '450 ml', price: 45000 }] },
-                    { name: 'Фраппе Chocolate', variants: [{ size: '350 ml', price: 35000 }, { size: '450 ml', price: 45000 }] },
-                    { name: 'Фраппе Vanilla', variants: [{ size: '350 ml', price: 35000 }, { size: '450 ml', price: 45000 }] },
-                    { name: 'Эспрессо - Тоник', variants: [{ size: '350 ml', price: 35000 }, { size: '450 ml', price: 45000 }] },
-                    { name: 'Соленая Карамель Латте', variants: [{ size: '350 ml', price: 30000 }, { size: '450 ml', price: 40000 }] },
-                    { name: 'Фисташковый Соблазн Латте', variants: [{ size: '350 ml', price: 30000 }, { size: '450 ml', price: 40000 }] },
-                    { name: 'Айс Американо', variants: [{ size: '350 ml', price: 25000 }, { size: '450 ml', price: 30000 }] },
-                    { name: 'Айс Капучино', variants: [{ size: '350 ml', price: 25000 }, { size: '350 ml', price: 35000 }] },
-                    { name: 'Айс Латте', variants: [{ size: '350 ml', price: 25000 }, { size: '450 ml', price: 35000 }] },
-                    { name: 'Айс Флет Уайт', variants: [{ size: '350 ml', price: 35000 }] },
-                    { name: 'Айс Латте Кокосовый', variants: [{ size: '350 ml', price: 35000 }, { size: '450 ml', price: 45000 }] },
-                    { name: 'Айс Матча Латте', variants: [{ size: '450 ml', price: 45000 }] },
-                    { name: 'Айс Кофе на безлактозном', variants: [{ size: '350 ml', price: 35000 }, { size: '450 ml', price: 45000 }] },
-                    { name: 'Кофе Бамбл', variants: [{ size: '450 ml', price: 50000 }] }
+                    { name: 'Фраппе Oreo', img: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=600&q=80', variants: [{ size: '350 ml', price: 35000 }, { size: '450 ml', price: 45000 }] },
+                    { name: 'Фраппе Chocolate', img: 'https://images.unsplash.com/photo-1568651315763-204933a11972?w=600&q=80', variants: [{ size: '350 ml', price: 35000 }, { size: '450 ml', price: 45000 }] },
+                    { name: 'Эспрессо - Тоник', img: 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=600&q=80', variants: [{ size: '350 ml', price: 35000 }, { size: '450 ml', price: 45000 }] },
+                    { name: 'Айс Латте', img: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=600&q=80', variants: [{ size: '350 ml', price: 25000 }, { size: '450 ml', price: 35000 }] }
                 ]
             },
             mojito: {
                 title: '🍹 Мохито & Прохладительные',
                 items: [
-                    { name: 'Мохито Классическое', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
-                    { name: 'Клубничный Драйв', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
-                    { name: 'Ягодный Микс', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
-                    { name: 'Апельсиновый Всплеск', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
-                    { name: 'Малиновый Мохито', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
-                    { name: 'Арбузный Бум', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
-                    { name: 'Смородиновый Заряд', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] }
+                    { name: 'Мохито Классическое', img: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=600&q=80', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
+                    { name: 'Клубничный Драйв', img: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=600&q=80', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] }
                 ]
             },
             icetea: {
                 title: '🍃 Айс Ти & Коктейли',
                 items: [
-                    { name: 'Манго Маракуйя', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
-                    { name: 'Ананасовая Свежесть', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
-                    { name: 'Голубая Лагуна', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
-                    { name: 'Окрыляющий Ред Бул', variants: [{ size: '500 ml', price: 50000 }, { size: '700 ml', price: 65000 }] },
-                    { name: 'Самаркандский Бриз (Айс Ти)', variants: [{ size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
-                    { name: 'Яблочный Сад (Айс Ти)', variants: [{ size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
-                    { name: 'Апельсиновый Айс Ти', variants: [{ size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
-                    { name: 'Ягодный Микс (Айс Ти)', variants: [{ size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] }
+                    { name: 'Манго Маракуйя', img: 'https://images.unsplash.com/photo-1556881286-fc6915169721?w=600&q=80', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
+                    { name: 'Голубая Лагуна', img: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=600&q=80', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] }
                 ]
             },
             milkshake: {
                 title: '🥤 Милкшейки',
                 items: [
-                    { name: 'Шоколадный', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
-                    { name: 'Банановый', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
-                    { name: 'Oreo', variants: [{ size: '300 ml', price: 25000 }, { size: '500 ml', price: 35000 }, { size: '700 ml', price: 45000 }] },
-                    { name: 'Баунти', variants: [{ size: '300 ml', price: 25000 }, { size: '500 ml', price: 35000 }, { size: '700 ml', price: 45000 }] },
-                    { name: 'Тирамису Шейк', variants: [{ size: '300 ml', price: 30000 }, { size: '500 ml', price: 35000 }, { size: '700 ml', price: 45000 }] },
-                    { name: 'Кофейный', variants: [{ size: '300 ml', price: 25000 }, { size: '500 ml', price: 35000 }, { size: '700 ml', price: 45000 }] },
-                    { name: 'Нутелла Банан', variants: [{ size: '300 ml', price: 25000 }, { size: '500 ml', price: 35000 }, { size: '700 ml', price: 45000 }] },
-                    { name: 'Кокосовый Рай', variants: [{ size: '300 ml', price: 30000 }, { size: '500 ml', price: 35000 }, { size: '700 ml', price: 45000 }] },
-                    { name: 'Манговый', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
-                    { name: 'Ванильный', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
-                    { name: 'Клубничный', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] }
+                    { name: 'Шоколадный', img: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=600&q=80', variants: [{ size: '300 ml', price: 20000 }, { size: '500 ml', price: 25000 }, { size: '700 ml', price: 35000 }] },
+                    { name: 'Oreo Шейк', img: 'https://images.unsplash.com/photo-1568651315763-204933a11972?w=600&q=80', variants: [{ size: '300 ml', price: 25000 }, { size: '500 ml', price: 35000 }, { size: '700 ml', price: 45000 }] }
                 ]
             },
             bubble: {
                 title: '🧋 Bubble Tea',
                 items: [
-                    { name: 'Классический', variants: [{ size: 'Стандарт', price: 35000 }] },
-                    { name: 'Клубничное Опьянение', variants: [{ size: 'Стандарт', price: 40000 }] },
-                    { name: 'Райское Наслаждение', variants: [{ size: 'Стандарт', price: 40000 }] },
-                    { name: 'Клубника в Шоколаде', variants: [{ size: 'Стандарт', price: 40000 }] },
-                    { name: 'Маття', variants: [{ size: 'Стандарт', price: 50000 }] },
-                    { name: 'Кофейный Бум', variants: [{ size: 'Стандарт', price: 40000 }] },
-                    { name: 'Oreo', variants: [{ size: 'Стандарт', price: 40000 }] },
-                    { name: 'Малина / Шоколад', variants: [{ size: 'Стандарт', price: 40000 }] },
-                    { name: 'Нутелла / Банан', variants: [{ size: 'Стандарт', price: 45000 }] }
+                    { name: 'Классический Bubble', img: 'https://images.unsplash.com/photo-1558857563-b371033873b8?w=600&q=80', variants: [{ size: 'Стандарт', price: 35000 }] },
+                    { name: 'Маття Bubble Tea', img: 'https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=600&q=80', variants: [{ size: 'Стандарт', price: 50000 }] }
                 ]
             }
         };
@@ -497,6 +493,9 @@
                 }
 
                 drinkEl.innerHTML = `
+                    <div class="drink-image-container">
+                        <img class="drink-image" src="${item.img || DEFAULT_IMG}" alt="${item.name}">
+                    </div>
                     <div class="drink-header">
                         <div class="drink-name">${item.name}</div>
                         <div class="drink-price" id="price_${key}_${itemIdx}">${item.variants[0].price.toLocaleString('ru-RU')} сум</div>
@@ -520,7 +519,7 @@
             tg.BackButton.onClick(showCategories);
         }
 
-        // Динамическая смена цен при нажатии на размер
+        // Мгновенный пересчет цены при изменении размера
         document.getElementById('drinksList').addEventListener('change', function(e) {
             if (e.target && e.target.type === 'radio') {
                 if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('selectionChanged');
