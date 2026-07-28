@@ -1,10 +1,3 @@
-ровку тачей графическим процессором iOS WebKit.
-
-Добавлен pointer-events: auto и убран e.preventDefault(), чтобы тач проходил без задержек.
-
-Заменяй полностью весь index.html:
-
-HTML
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -209,7 +202,7 @@ HTML
             color: var(--accent-gold);
         }
 
-        /* НАДЁЖНЫЙ RADIO-ПЕРЕКЛЮЧАТЕЛЬ ОБЪЕМОВ */
+        /* RADIO SELECTOR */
         .size-selector {
             display: flex;
             gap: 8px;
@@ -242,7 +235,6 @@ HTML
             transition: all 0.2s ease;
         }
 
-        /* Стиль активного радио-баттона */
         .size-selector input[type="radio"]:checked + .size-label {
             background: linear-gradient(135deg, #e6b87d 0%, #c49354 100%);
             color: #0f0c0a;
@@ -485,16 +477,25 @@ HTML
             progressEl.innerHTML = `Куплено <b>${stamps} из 6</b> кофе для получения подарка 🎁`;
         }
 
-        // РАСЧЕТ ЦЕНЫ
-        function updatePrice(catKey, itemIdx) {
+        // ОБНОВЛЕНИЕ ЦЕНЫ С ЯВНЫМ УКАЗАНИЕМ ВАРИАНТА
+        function updatePrice(catKey, itemIdx, forceVariantIdx = null) {
             if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('selectionChanged');
 
             const item = MENU[catKey].items[itemIdx];
             const priceEl = document.getElementById(`price_${catKey}_${itemIdx}`);
             
-            // Находим выбранный radio-инпут
-            const checkedRadio = document.querySelector(`input[name="size_${catKey}_${itemIdx}"]:checked`);
-            const variantIdx = checkedRadio ? parseInt(checkedRadio.value) : 0;
+            let variantIdx = forceVariantIdx;
+            
+            // Если индекс не передан явно, ищем отмеченную радио-кнопку
+            if (variantIdx === null) {
+                const checkedRadio = document.querySelector(`input[name="size_${catKey}_${itemIdx}"]:checked`);
+                variantIdx = checkedRadio ? parseInt(checkedRadio.value) : 0;
+            } else {
+                // Принудительно отмечаем radio-кнопку в DOM
+                const radioToSelect = document.getElementById(`size_${catKey}_${itemIdx}_${variantIdx}`);
+                if (radioToSelect) radioToSelect.checked = true;
+            }
+
             const basePrice = item.variants[variantIdx] ? item.variants[variantIdx].price : item.variants[0].price;
 
             const addonSelect = document.getElementById(`addon_${catKey}_${itemIdx}`);
@@ -525,7 +526,7 @@ HTML
 
                 const optionsHtml = SYRUPS_AND_ADDONS.map(addon => `<option value="${addon}">${addon}</option>`).join('');
 
-                // Формируем нативный radio-переключатель
+                // Клик прямо по label теперь мгновенно вызывает updatePrice с нужным вариантом
                 let sizesHtml = '';
                 if (item.variants.length > 1) {
                     sizesHtml = `<div class="size-selector">` + 
@@ -534,9 +535,10 @@ HTML
                                    id="size_${key}_${itemIdx}_${vIdx}" 
                                    name="size_${key}_${itemIdx}" 
                                    value="${vIdx}" 
-                                   ${vIdx === 0 ? 'checked' : ''} 
-                                   onchange="updatePrice('${key}', ${itemIdx})">
-                            <label for="size_${key}_${itemIdx}_${vIdx}" class="size-label">${v.size}</label>
+                                   ${vIdx === 0 ? 'checked' : ''}>
+                            <label for="size_${key}_${itemIdx}_${vIdx}" 
+                                   class="size-label" 
+                                   onclick="updatePrice('${key}', ${itemIdx}, ${vIdx})">${v.size}</label>
                         `).join('') + 
                     `</div>`;
                 }
@@ -549,7 +551,7 @@ HTML
                     
                     ${sizesHtml}
 
-                    <select class="addon-select" id="addon_${key}_${itemIdx}" onchange="updatePrice('${key}', ${itemIdx})">
+                    <select class="addon-select" id="addon_${catKey || key}_${itemIdx}" onchange="updatePrice('${key}', ${itemIdx})">
                         ${optionsHtml}
                     </select>
 
@@ -632,4 +634,3 @@ HTML
     </script>
 </body>
 </html>
-Этот способ работает на любом устройстве без исключений! Нажимай на любой объем — radio-кнопка мгновенно переключится и обновит цену.
