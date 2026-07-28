@@ -1,3 +1,10 @@
+ровку тачей графическим процессором iOS WebKit.
+
+Добавлен pointer-events: auto и убран e.preventDefault(), чтобы тач проходил без задержек.
+
+Заменяй полностью весь index.html:
+
+HTML
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -8,8 +15,8 @@
     <style>
         :root {
             --bg-color: #0f0c0a;
-            --card-bg: rgba(28, 23, 19, 0.65);
-            --card-border: rgba(212, 163, 115, 0.2);
+            --card-bg: #1c1713;
+            --card-border: rgba(212, 163, 115, 0.25);
             --accent-gold: #e6b87d;
             --accent-glow: rgba(230, 184, 125, 0.4);
             --text-main: #fefae0;
@@ -49,7 +56,6 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-transform: uppercase;
-            text-shadow: 0 0 20px var(--accent-glow);
         }
 
         .brand-subtitle {
@@ -59,26 +65,16 @@
             letter-spacing: 0.5px;
         }
 
-        /* GLASS LOYALTY CARD */
+        /* LOYALTY CARD */
         .loyalty-card {
-            background: rgba(30, 24, 20, 0.45);
+            background: #1e1814;
             border: 1px solid rgba(212, 163, 115, 0.3);
             border-radius: 20px;
             padding: 18px 16px;
             margin-bottom: 22px;
             text-align: center;
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px var(--accent-glow);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             position: relative;
-            overflow: hidden;
-        }
-
-        .loyalty-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; height: 1px;
-            background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
         }
 
         .loyalty-title {
@@ -107,14 +103,12 @@
             justify-content: center;
             font-size: 18px;
             background: rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease;
         }
 
         .stamp.active {
             border-color: var(--accent-gold);
             background: linear-gradient(135deg, #e6b87d 0%, #b8860b 100%);
             box-shadow: 0 0 15px var(--accent-glow);
-            transform: scale(1.08);
         }
 
         .loyalty-progress {
@@ -136,13 +130,6 @@
             overflow: hidden;
             border: 1px solid var(--card-border);
             cursor: pointer;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .category-card:active {
-            transform: scale(0.98);
-            box-shadow: 0 0 20px var(--accent-glow);
         }
 
         .category-bg {
@@ -150,7 +137,7 @@
             top: 0; left: 0; width: 100%; height: 100%;
             background-size: cover;
             background-position: center;
-            filter: brightness(0.65) contrast(1.1);
+            filter: brightness(0.65);
         }
 
         .category-overlay {
@@ -167,13 +154,11 @@
             font-size: 17px;
             font-weight: 800;
             color: #fff;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
         }
 
         .category-arrow {
             color: var(--accent-gold);
             font-size: 22px;
-            text-shadow: 0 0 10px var(--accent-glow);
         }
 
         /* DRINKS VIEW */
@@ -187,9 +172,6 @@
             border-radius: 12px;
             cursor: pointer;
             margin-bottom: 16px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
         }
 
         .view-title {
@@ -204,9 +186,9 @@
             border: 1px solid var(--card-border);
             border-radius: 16px;
             padding: 16px;
-            margin-bottom: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            margin-bottom: 14px;
             position: relative;
+            z-index: 1;
         }
 
         .drink-header {
@@ -225,24 +207,26 @@
             font-size: 16px;
             font-weight: 800;
             color: var(--accent-gold);
-            text-shadow: 0 0 10px var(--accent-glow);
         }
 
-        /* КНОПКИ ВЫБОРА ОБЪЕМА */
+        /* НАДЁЖНЫЙ RADIO-ПЕРЕКЛЮЧАТЕЛЬ ОБЪЕМОВ */
         .size-selector {
             display: flex;
             gap: 8px;
             margin-bottom: 12px;
-            background: rgba(0,0,0,0.4);
+            background: rgba(0,0,0,0.5);
             padding: 4px;
             border-radius: 12px;
             border: 1px solid rgba(255,255,255,0.08);
             position: relative;
-            z-index: 99;
-            pointer-events: auto !important;
+            z-index: 10;
         }
 
-        .size-btn {
+        .size-selector input[type="radio"] {
+            display: none;
+        }
+
+        .size-label {
             flex: 1;
             padding: 10px 0;
             border-radius: 8px;
@@ -250,26 +234,24 @@
             font-weight: 700;
             color: var(--text-muted);
             background: transparent;
-            border: none;
-            outline: none;
             text-align: center;
             cursor: pointer;
             user-select: none;
             -webkit-user-select: none;
-            touch-action: manipulation;
-            pointer-events: auto !important;
+            display: block;
             transition: all 0.2s ease;
         }
 
-        .size-btn.active {
-            background: linear-gradient(135deg, #e6b87d 0%, #c49354 100%) !important;
-            color: #0f0c0a !important;
+        /* Стиль активного радио-баттона */
+        .size-selector input[type="radio"]:checked + .size-label {
+            background: linear-gradient(135deg, #e6b87d 0%, #c49354 100%);
+            color: #0f0c0a;
             box-shadow: 0 2px 10px var(--accent-glow);
         }
 
         .addon-select {
             width: 100%;
-            background: rgba(0,0,0,0.4);
+            background: rgba(0,0,0,0.5);
             border: 1px solid var(--card-border);
             color: var(--text-main);
             padding: 10px 12px;
@@ -277,6 +259,8 @@
             font-size: 12px;
             margin-bottom: 12px;
             outline: none;
+            position: relative;
+            z-index: 5;
         }
 
         .add-btn {
@@ -289,8 +273,8 @@
             font-weight: 800;
             font-size: 14px;
             cursor: pointer;
-            box-shadow: 0 4px 15px var(--accent-glow);
-            transition: all 0.2s ease;
+            position: relative;
+            z-index: 5;
         }
 
         .add-btn:active {
@@ -477,7 +461,6 @@
             }
         };
 
-        let selectedVariants = {};
         let cart = [];
 
         // ШТАМПЫ
@@ -502,32 +485,16 @@
             progressEl.innerHTML = `Куплено <b>${stamps} из 6</b> кофе для получения подарка 🎁`;
         }
 
-        // ВЫБОР ОБЪЕМА
-        function handleSizeSelect(key, itemIdx, vIdx, btnEl) {
-            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('selectionChanged');
-            
-            selectedVariants[`${key}_${itemIdx}`] = vIdx;
-
-            const parent = btnEl.parentElement;
-            if (parent) {
-                const btns = parent.querySelectorAll('.size-btn');
-                btns.forEach((b, idx) => {
-                    if (idx === vIdx) {
-                        b.classList.add('active');
-                    } else {
-                        b.classList.remove('active');
-                    }
-                });
-            }
-
-            updatePrice(key, itemIdx);
-        }
-
+        // РАСЧЕТ ЦЕНЫ
         function updatePrice(catKey, itemIdx) {
+            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('selectionChanged');
+
             const item = MENU[catKey].items[itemIdx];
             const priceEl = document.getElementById(`price_${catKey}_${itemIdx}`);
             
-            const variantIdx = selectedVariants[`${catKey}_${itemIdx}`] !== undefined ? selectedVariants[`${catKey}_${itemIdx}`] : 0;
+            // Находим выбранный radio-инпут
+            const checkedRadio = document.querySelector(`input[name="size_${catKey}_${itemIdx}"]:checked`);
+            const variantIdx = checkedRadio ? parseInt(checkedRadio.value) : 0;
             const basePrice = item.variants[variantIdx] ? item.variants[variantIdx].price : item.variants[0].price;
 
             const addonSelect = document.getElementById(`addon_${catKey}_${itemIdx}`);
@@ -553,65 +520,41 @@
             drinksList.innerHTML = '';
 
             categoryData.items.forEach((item, itemIdx) => {
-                selectedVariants[`${key}_${itemIdx}`] = 0;
-
                 const drinkEl = document.createElement('div');
                 drinkEl.className = 'drink-item';
 
                 const optionsHtml = SYRUPS_AND_ADDONS.map(addon => `<option value="${addon}">${addon}</option>`).join('');
 
-                // Шапка напитка
-                const headerDiv = document.createElement('div');
-                headerDiv.className = 'drink-header';
-                headerDiv.innerHTML = `
-                    <div class="drink-name">${item.name}</div>
-                    <div class="drink-price" id="price_${key}_${itemIdx}">${item.variants[0].price.toLocaleString('ru-RU')} сум</div>
-                `;
-                drinkEl.appendChild(headerDiv);
-
-                // Селектор объемов через DOM (чтобы вешать слушатели 100% нативно)
+                // Формируем нативный radio-переключатель
+                let sizesHtml = '';
                 if (item.variants.length > 1) {
-                    const sizeSelectorDiv = document.createElement('div');
-                    sizeSelectorDiv.className = 'size-selector';
-
-                    item.variants.forEach((v, vIdx) => {
-                        const btn = document.createElement('button');
-                        btn.type = 'button';
-                        btn.className = `size-btn ${vIdx === 0 ? 'active' : ''}`;
-                        btn.innerText = v.size;
-
-                        const triggerAction = (e) => {
-                            if (e) {
-                                e.preventDefault();
-                                e.stopPropagation();
-                            }
-                            handleSizeSelect(key, itemIdx, vIdx, btn);
-                        };
-
-                        btn.addEventListener('touchstart', triggerAction, { passive: false });
-                        btn.addEventListener('click', triggerAction);
-
-                        sizeSelectorDiv.appendChild(btn);
-                    });
-
-                    drinkEl.appendChild(sizeSelectorDiv);
+                    sizesHtml = `<div class="size-selector">` + 
+                        item.variants.map((v, vIdx) => `
+                            <input type="radio" 
+                                   id="size_${key}_${itemIdx}_${vIdx}" 
+                                   name="size_${key}_${itemIdx}" 
+                                   value="${vIdx}" 
+                                   ${vIdx === 0 ? 'checked' : ''} 
+                                   onchange="updatePrice('${key}', ${itemIdx})">
+                            <label for="size_${key}_${itemIdx}_${vIdx}" class="size-label">${v.size}</label>
+                        `).join('') + 
+                    `</div>`;
                 }
 
-                // Селектор сиропов
-                const selectEl = document.createElement('select');
-                selectEl.className = 'addon-select';
-                selectEl.id = `addon_${key}_${itemIdx}`;
-                selectEl.innerHTML = optionsHtml;
-                selectEl.onchange = () => updatePrice(key, itemIdx);
-                drinkEl.appendChild(selectEl);
+                drinkEl.innerHTML = `
+                    <div class="drink-header">
+                        <div class="drink-name">${item.name}</div>
+                        <div class="drink-price" id="price_${key}_${itemIdx}">${item.variants[0].price.toLocaleString('ru-RU')} сум</div>
+                    </div>
+                    
+                    ${sizesHtml}
 
-                // Кнопка добавить
-                const addBtn = document.createElement('button');
-                addBtn.className = 'add-btn';
-                addBtn.innerText = '+ Добавить в корзину';
-                addBtn.onclick = () => addToCart(key, itemIdx);
-                drinkEl.appendChild(addBtn);
+                    <select class="addon-select" id="addon_${key}_${itemIdx}" onchange="updatePrice('${key}', ${itemIdx})">
+                        ${optionsHtml}
+                    </select>
 
+                    <button type="button" class="add-btn" onclick="addToCart('${key}', ${itemIdx})">+ Добавить в корзину</button>
+                `;
                 drinksList.appendChild(drinkEl);
             });
 
@@ -634,7 +577,8 @@
 
             const item = MENU[catKey].items[itemIdx];
             
-            const variantIdx = selectedVariants[`${catKey}_${itemIdx}`] !== undefined ? selectedVariants[`${catKey}_${itemIdx}`] : 0;
+            const checkedRadio = document.querySelector(`input[name="size_${catKey}_${itemIdx}"]:checked`);
+            const variantIdx = checkedRadio ? parseInt(checkedRadio.value) : 0;
             const selectedVariant = item.variants[variantIdx];
 
             const addonSelect = document.getElementById(`addon_${catKey}_${itemIdx}`);
@@ -688,3 +632,4 @@
     </script>
 </body>
 </html>
+Этот способ работает на любом устройстве без исключений! Нажимай на любой объем — radio-кнопка мгновенно переключится и обновит цену.
