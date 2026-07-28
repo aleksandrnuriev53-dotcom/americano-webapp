@@ -180,8 +180,6 @@
             border-radius: 16px;
             padding: 16px;
             margin-bottom: 14px;
-            position: relative;
-            z-index: 1;
         }
 
         .drink-header {
@@ -202,7 +200,7 @@
             color: var(--accent-gold);
         }
 
-        /* RADIO SELECTOR */
+        /* ПРОСТЫЕ КНОПКИ ОБЪЕМА */
         .size-selector {
             display: flex;
             gap: 8px;
@@ -211,15 +209,9 @@
             padding: 4px;
             border-radius: 12px;
             border: 1px solid rgba(255,255,255,0.08);
-            position: relative;
-            z-index: 10;
         }
 
-        .size-selector input[type="radio"] {
-            display: none;
-        }
-
-        .size-label {
+        .size-btn {
             flex: 1;
             padding: 10px 0;
             border-radius: 8px;
@@ -227,15 +219,14 @@
             font-weight: 700;
             color: var(--text-muted);
             background: transparent;
+            border: none;
+            outline: none;
             text-align: center;
             cursor: pointer;
-            user-select: none;
-            -webkit-user-select: none;
-            display: block;
             transition: all 0.2s ease;
         }
 
-        .size-selector input[type="radio"]:checked + .size-label {
+        .size-btn.active {
             background: linear-gradient(135deg, #e6b87d 0%, #c49354 100%);
             color: #0f0c0a;
             box-shadow: 0 2px 10px var(--accent-glow);
@@ -251,8 +242,6 @@
             font-size: 12px;
             margin-bottom: 12px;
             outline: none;
-            position: relative;
-            z-index: 5;
         }
 
         .add-btn {
@@ -265,8 +254,6 @@
             font-weight: 800;
             font-size: 14px;
             cursor: pointer;
-            position: relative;
-            z-index: 5;
         }
 
         .add-btn:active {
@@ -453,9 +440,10 @@
             }
         };
 
+        let selectedVariants = {};
         let cart = [];
 
-        // ШТАМПЫ
+        // ШТАМПЫ ЛОЯЛЬНОСТИ
         const urlParams = new URLSearchParams(window.location.search);
         const stamps = parseInt(urlParams.get('stamps')) || 0;
 
@@ -477,26 +465,35 @@
             progressEl.innerHTML = `Куплено <b>${stamps} из 6</b> кофе для получения подарка 🎁`;
         }
 
-        // ОБНОВЛЕНИЕ ЦЕНЫ С ЯВНЫМ УКАЗАНИЕМ ВАРИАНТА
-        function updatePrice(catKey, itemIdx, forceVariantIdx = null) {
+        // ВЫБОР ОБЪЕМА
+        function selectSize(catKey, itemIdx, variantIdx, btn) {
             if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('selectionChanged');
 
+            // Сохраняем выбранный индекс
+            selectedVariants[`${catKey}_${itemIdx}`] = variantIdx;
+
+            // Переключаем подсветку кнопок в этом блоке
+            const container = btn.parentElement;
+            const buttons = container.querySelectorAll('.size-btn');
+            buttons.forEach((b, idx) => {
+                if (idx === variantIdx) {
+                    b.classList.add('active');
+                } else {
+                    b.classList.remove('active');
+                }
+            });
+
+            // Обновляем цену
+            updatePrice(catKey, itemIdx);
+        }
+
+        // ОБНОВЛЕНИЕ ЦЕНЫ
+        function updatePrice(catKey, itemIdx) {
             const item = MENU[catKey].items[itemIdx];
             const priceEl = document.getElementById(`price_${catKey}_${itemIdx}`);
             
-            let variantIdx = forceVariantIdx;
-            
-            // Если индекс не передан явно, ищем отмеченную радио-кнопку
-            if (variantIdx === null) {
-                const checkedRadio = document.querySelector(`input[name="size_${catKey}_${itemIdx}"]:checked`);
-                variantIdx = checkedRadio ? parseInt(checkedRadio.value) : 0;
-            } else {
-                // Принудительно отмечаем radio-кнопку в DOM
-                const radioToSelect = document.getElementById(`size_${catKey}_${itemIdx}_${variantIdx}`);
-                if (radioToSelect) radioToSelect.checked = true;
-            }
-
-            const basePrice = item.variants[variantIdx] ? item.variants[variantIdx].price : item.variants[0].price;
+            const variantIdx = selectedVariants[`${catKey}_${itemIdx}`] !== undefined ? selectedVariants[`${catKey}_${itemIdx}`] : 0;
+            const basePrice = item.variants[variantIdx].price;
 
             const addonSelect = document.getElementById(`addon_${catKey}_${itemIdx}`);
             const selectedAddon = addonSelect ? addonSelect.value : "Без добавки";
@@ -521,24 +518,22 @@
             drinksList.innerHTML = '';
 
             categoryData.items.forEach((item, itemIdx) => {
+                selectedVariants[`${key}_${itemIdx}`] = 0; // По умолчанию всегда 1-й объем
+
                 const drinkEl = document.createElement('div');
                 drinkEl.className = 'drink-item';
 
                 const optionsHtml = SYRUPS_AND_ADDONS.map(addon => `<option value="${addon}">${addon}</option>`).join('');
 
-                // Клик прямо по label теперь мгновенно вызывает updatePrice с нужным вариантом
                 let sizesHtml = '';
                 if (item.variants.length > 1) {
                     sizesHtml = `<div class="size-selector">` + 
                         item.variants.map((v, vIdx) => `
-                            <input type="radio" 
-                                   id="size_${key}_${itemIdx}_${vIdx}" 
-                                   name="size_${key}_${itemIdx}" 
-                                   value="${vIdx}" 
-                                   ${vIdx === 0 ? 'checked' : ''}>
-                            <label for="size_${key}_${itemIdx}_${vIdx}" 
-                                   class="size-label" 
-                                   onclick="updatePrice('${key}', ${itemIdx}, ${vIdx})">${v.size}</label>
+                            <button type="button" 
+                                    class="size-btn ${vIdx === 0 ? 'active' : ''}" 
+                                    onclick="selectSize('${key}', ${itemIdx}, ${vIdx}, this)">
+                                ${v.size}
+                            </button>
                         `).join('') + 
                     `</div>`;
                 }
@@ -551,7 +546,7 @@
                     
                     ${sizesHtml}
 
-                    <select class="addon-select" id="addon_${catKey || key}_${itemIdx}" onchange="updatePrice('${key}', ${itemIdx})">
+                    <select class="addon-select" id="addon_${key}_${itemIdx}" onchange="updatePrice('${key}', ${itemIdx})">
                         ${optionsHtml}
                     </select>
 
@@ -579,8 +574,7 @@
 
             const item = MENU[catKey].items[itemIdx];
             
-            const checkedRadio = document.querySelector(`input[name="size_${catKey}_${itemIdx}"]:checked`);
-            const variantIdx = checkedRadio ? parseInt(checkedRadio.value) : 0;
+            const variantIdx = selectedVariants[`${catKey}_${itemIdx}`] !== undefined ? selectedVariants[`${catKey}_${itemIdx}`] : 0;
             const selectedVariant = item.variants[variantIdx];
 
             const addonSelect = document.getElementById(`addon_${catKey}_${itemIdx}`);
