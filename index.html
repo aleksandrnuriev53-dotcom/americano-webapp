@@ -465,11 +465,12 @@
     {
       id: "classic", icon: "☕", name: "Классический Кофе",
       drinks: [
-        { name: "Эспрессо", volumes: [{ml:250,price:20000},{ml:350,price:25000}] },
+        { name: "Эспрессо", hideVolume: true, volumes: [{label:"Одинарный",price:20000}] },
+        { name: "Двойной Эспрессо", hideVolume: true, volumes: [{label:"Двойной",price:25000}] },
         { name: "Американо", volumes: [{ml:250,price:20000},{ml:350,price:25000}] },
         { name: "Капучино", volumes: [{ml:250,price:20000},{ml:350,price:25000},{ml:450,price:30000}] },
         { name: "Латте", volumes: [{ml:250,price:20000},{ml:350,price:25000},{ml:450,price:30000}] },
-        { name: "Флэт Уайт", volumes: [{ml:450,price:30000}] },
+        { name: "Флэт Уайт", volumes: [{ml:350,price:30000}] },
         { name: "Мокачинно", volumes: [{ml:250,price:25000},{ml:350,price:30000},{ml:450,price:40000}] },
         { name: "Макиатто", volumes: [{ml:250,price:25000},{ml:350,price:30000},{ml:450,price:40000}] },
         { name: "Раф Сливочный", volumes: [{ml:250,price:25000},{ml:350,price:35000},{ml:450,price:45000}] },
@@ -491,12 +492,12 @@
         { name: "Эспрессо - Тоник", volumes: [{ml:350,price:35000},{ml:450,price:45000}] },
         { name: "Соленая Карамель", volumes: [{ml:350,price:30000},{ml:450,price:40000}] },
         { name: "Фисташковый Соблазн", volumes: [{ml:350,price:30000},{ml:450,price:40000}] },
-        { name: "Айс Американо", volumes: [{ml:500,price:25000},{ml:700,price:30000}] },
-        { name: "Айс Капучино", volumes: [{ml:500,price:25000},{ml:700,price:35000}] },
-        { name: "Айс Латте", volumes: [{ml:500,price:25000},{ml:700,price:35000}] },
-        { name: "Айс Флэт Уайт", volumes: [{ml:500,price:35000}] },
+        { name: "Айс Американо", volumes: [{ml:350,price:25000},{ml:500,price:30000}] },
+        { name: "Айс Капучино", volumes: [{ml:350,price:25000},{ml:500,price:35000}] },
+        { name: "Айс Латте", volumes: [{ml:350,price:25000},{ml:500,price:35000}] },
+        { name: "Айс Флэт Уайт", volumes: [{ml:350,price:35000}] },
         { name: "Айс Матча Латте", volumes: [{ml:500,price:45000}] },
-        { name: "Айс Кофе на безлактозном молоке", volumes: [{ml:500,price:35000},{ml:700,price:45000}] },
+        { name: "Айс Кофе на безлактозном молоке", volumes: [{ml:350,price:35000},{ml:500,price:45000}] },
         { name: "Кофе Бамбл", volumes: [{ml:500,price:50000}] }
       ]
     },
@@ -508,17 +509,17 @@
         { name: "Апельсин Лайм 🍊", volumes: [{ml:500,price:25000},{ml:700,price:35000}] },
         { name: "Помело Лайм 🍋", volumes: [{ml:500,price:25000},{ml:700,price:35000}] },
         { name: "Манго Маракуйя 🥭", volumes: [{ml:500,price:30000},{ml:700,price:35000}] },
-        { name: "Мохито Классическое", volumes: [{ml:300,price:20000},{ml:500,price:25000},{ml:700,price:35000}] },
-        { name: "Мохито Клубничный Драйв", volumes: [{ml:300,price:20000},{ml:500,price:25000},{ml:700,price:35000}] },
-        { name: "Мохито Ягодный Микс", volumes: [{ml:300,price:20000},{ml:500,price:25000},{ml:700,price:35000}] },
-        { name: "Малиновый Мохито", volumes: [{ml:300,price:20000},{ml:500,price:25000},{ml:700,price:35000}] },
-        { name: "Манго Маракуйя (коктейль)", volumes: [{ml:300,price:20000},{ml:500,price:25000},{ml:700,price:35000}] },
-        { name: "Ананасовая Свежесть", volumes: [{ml:300,price:20000},{ml:500,price:25000},{ml:700,price:35000}] },
-        { name: "Голубая Лагуна", volumes: [{ml:300,price:20000},{ml:500,price:25000},{ml:700,price:35000}] },
-        { name: "Апельсиновый Всплеск", volumes: [{ml:300,price:20000},{ml:500,price:25000},{ml:700,price:35000}] },
-        { name: "Арбузный Бум", volumes: [{ml:300,price:20000},{ml:500,price:25000},{ml:700,price:35000}] },
-        { name: "Смородиновый Заряд", volumes: [{ml:300,price:20000},{ml:500,price:25000},{ml:700,price:35000}] },
-        { name: "Окрыляющий Ред Бул", volumes: [{ml:500,price:50000},{ml:700,price:65000}] }
+        { name: "Мохито Классическое", volumes: [{ml:350,price:20000},{ml:500,price:25000},{ml:700,price:35000}] },
+        { name: "Мохито Клубничный Драйв", volumes: [{ml:350,price:20000},{ml:500,price:25000},{ml:700,price:35000}] },
+        { name: "Мохито Ягодный Микс", volumes: [{ml:350,price:20000},{ml:500,price:25000},{ml:700,price:35000}] },
+        { name: "Малиновый Мохито", volumes: [{ml:350,price:20000},{ml:500,price:25000},{ml:700,price:35000}] },
+        { name: "Манго Маракуйя (коктейль)", volumes: [{ml:350,price:20000},{ml:500,price:25000},{ml:700,price:35000}] },
+        { name: "Ананасовая Свежесть", volumes: [{ml:350,price:20000},{ml:500,price:25000},{ml:700,price:35000}] },
+        { name: "Голубая Лагуна", volumes: [{ml:350,price:20000},{ml:500,price:25000},{ml:700,price:35000}] },
+        { name: "Апельсиновый Всплеск", volumes: [{ml:350,price:20000},{ml:500,price:25000},{ml:700,price:35000}] },
+        { name: "Арбузный Бум", volumes: [{ml:350,price:20000},{ml:500,price:25000},{ml:700,price:35000}] },
+        { name: "Смородиновый Заряд", volumes: [{ml:350,price:20000},{ml:500,price:25000},{ml:700,price:35000}] },
+        { name: "Окрыляющий Ред Бул", volumes: [{ml:350,price:50000},{ml:500,price:65000}] }
       ]
     },
     {
@@ -528,10 +529,10 @@
         { name: "Персик Лайм 🍑", volumes: [{ml:500,price:25000},{ml:700,price:30000}] },
         { name: "Лесные Ягоды 🫐", volumes: [{ml:500,price:25000},{ml:700,price:30000}] },
         { name: "Манго Маракуйя (Айс-Ти) 🥭", volumes: [{ml:500,price:25000},{ml:700,price:30000}] },
-        { name: "Самаркандский Бриз", volumes: [{ml:500,price:25000},{ml:700,price:35000}] },
-        { name: "Яблочный Сад", volumes: [{ml:500,price:25000},{ml:700,price:35000}] },
-        { name: "Апельсиновый Айс-Ти", volumes: [{ml:500,price:25000},{ml:700,price:35000}] },
-        { name: "Ягодный Микс (Айс-Ти)", volumes: [{ml:500,price:25000},{ml:700,price:35000}] },
+        { name: "Самаркандский Бриз", volumes: [{ml:350,price:25000},{ml:500,price:35000}] },
+        { name: "Яблочный Сад", volumes: [{ml:350,price:25000},{ml:500,price:35000}] },
+        { name: "Апельсиновый Айс-Ти", volumes: [{ml:350,price:25000},{ml:500,price:35000}] },
+        { name: "Ягодный Микс (Айс-Ти)", volumes: [{ml:350,price:25000},{ml:500,price:35000}] },
         { name: "Матча Классическая 🍵", volumes: [{ml:500,price:35000},{ml:700,price:40000}] },
         { name: "Матча Клубника 🍓", volumes: [{ml:500,price:40000},{ml:700,price:45000}] },
         { name: "Матча Манго 🥭", volumes: [{ml:500,price:40000},{ml:700,price:45000}] }
@@ -567,17 +568,17 @@
     {
       id: "milkshake", icon: "🥤", name: "Милкшейки",
       drinks: [
-        { name: "Шоколадный", volumes: [{ml:300,price:20000},{ml:500,price:25000},{ml:700,price:35000}] },
-        { name: "Банановый", volumes: [{ml:300,price:20000},{ml:500,price:25000},{ml:700,price:35000}] },
-        { name: "Орео", volumes: [{ml:300,price:25000},{ml:500,price:35000},{ml:700,price:45000}] },
-        { name: "Баунти", volumes: [{ml:300,price:25000},{ml:500,price:35000},{ml:700,price:45000}] },
-        { name: "Тирамису Шейк", volumes: [{ml:300,price:30000},{ml:500,price:35000},{ml:700,price:45000}] },
-        { name: "Кофейный", volumes: [{ml:300,price:25000},{ml:500,price:35000},{ml:700,price:45000}] },
-        { name: "Нутелла Банан", volumes: [{ml:300,price:25000},{ml:500,price:35000},{ml:700,price:45000}] },
-        { name: "Кокосовый Рай", volumes: [{ml:300,price:30000},{ml:500,price:35000},{ml:700,price:45000}] },
-        { name: "Манговый", volumes: [{ml:300,price:20000},{ml:500,price:25000},{ml:700,price:35000}] },
-        { name: "Ванильный", volumes: [{ml:300,price:20000},{ml:500,price:25000},{ml:700,price:35000}] },
-        { name: "Клубничный", volumes: [{ml:300,price:20000},{ml:500,price:25000},{ml:700,price:35000}] }
+        { name: "Шоколадный", volumes: [{ml:350,price:20000},{ml:500,price:25000},{ml:700,price:35000}] },
+        { name: "Банановый", volumes: [{ml:350,price:20000},{ml:500,price:25000},{ml:700,price:35000}] },
+        { name: "Орео", volumes: [{ml:350,price:25000},{ml:500,price:35000},{ml:700,price:45000}] },
+        { name: "Баунти", volumes: [{ml:350,price:25000},{ml:500,price:35000},{ml:700,price:45000}] },
+        { name: "Тирамису Шейк", volumes: [{ml:350,price:30000},{ml:500,price:35000},{ml:700,price:45000}] },
+        { name: "Кофейный", volumes: [{ml:350,price:25000},{ml:500,price:35000},{ml:700,price:45000}] },
+        { name: "Нутелла Банан", volumes: [{ml:350,price:25000},{ml:500,price:35000},{ml:700,price:45000}] },
+        { name: "Кокосовый Рай", volumes: [{ml:350,price:30000},{ml:500,price:35000},{ml:700,price:45000}] },
+        { name: "Манговый", volumes: [{ml:350,price:20000},{ml:500,price:25000},{ml:700,price:35000}] },
+        { name: "Ванильный", volumes: [{ml:350,price:20000},{ml:500,price:25000},{ml:700,price:35000}] },
+        { name: "Клубничный", volumes: [{ml:350,price:20000},{ml:500,price:25000},{ml:700,price:35000}] }
       ]
     }
   ];
@@ -604,6 +605,12 @@
     return raw;
   }
 
+  function getUrlFree(){
+    var params = new URLSearchParams(window.location.search);
+    var raw = params.get("free");
+    return raw === "1" || raw === "true";
+  }
+
   /* =========================================================
      LOYALTY CARD
   ========================================================= */
@@ -615,7 +622,8 @@
   }
 
   function renderLoyalty(){
-    var stamps = getUrlStamps();
+    var freeDrink = getUrlFree();
+    var stamps = freeDrink ? 6 : getUrlStamps();
     var row = document.getElementById("stampsRow");
     row.innerHTML = "";
     for (var i = 0; i < 6; i++){
@@ -626,7 +634,7 @@
     }
     document.getElementById("loyaltyCount").innerHTML = stamps + "<span>/6</span>";
     var note = document.getElementById("loyaltyNote");
-    if (stamps >= 6){
+    if (freeDrink || stamps >= 6){
       note.innerHTML = "<b>Поздравляем!</b> У вас есть бесплатный напиток — покажите карту бариста.";
     } else {
       var left = 6 - stamps;
@@ -729,18 +737,21 @@
       head.appendChild(priceEl);
       card.appendChild(head);
 
-      // --- volume buttons row (isolated per-card) ---
-      var volRow = document.createElement("div");
-      volRow.className = "vol-row";
-      drink.volumes.forEach(function(vol, volIndex){
-        var btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "vol-btn" + (volIndex === 0 ? " active" : "");
-        btn.textContent = vol.ml + " мл";
-        btn.setAttribute("data-price", vol.price);
-        volRow.appendChild(btn);
-      });
-      card.appendChild(volRow);
+      // --- volume buttons row (isolated per-card) — skipped for single fixed-price drinks ---
+      var volRow = null;
+      if (!drink.hideVolume){
+        volRow = document.createElement("div");
+        volRow.className = "vol-row";
+        drink.volumes.forEach(function(vol, volIndex){
+          var btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "vol-btn" + (volIndex === 0 ? " active" : "");
+          btn.textContent = vol.label ? vol.label : (vol.ml + " мл");
+          btn.setAttribute("data-price", vol.price);
+          volRow.appendChild(btn);
+        });
+        card.appendChild(volRow);
+      }
 
       // --- addon select ---
       var select = document.createElement("select");
@@ -783,16 +794,18 @@
       }
 
       // Volume buttons: toggle active strictly within THIS card's vol-row
-      var volButtons = volRow.querySelectorAll(".vol-btn");
-      volButtons.forEach(function(btn){
-        btn.addEventListener("click", function(){
-          volRow.querySelectorAll(".vol-btn").forEach(function(b){
-            b.classList.remove("active");
+      if (volRow){
+        var volButtons = volRow.querySelectorAll(".vol-btn");
+        volButtons.forEach(function(btn){
+          btn.addEventListener("click", function(){
+            volRow.querySelectorAll(".vol-btn").forEach(function(b){
+              b.classList.remove("active");
+            });
+            btn.classList.add("active");
+            recalcPrice();
           });
-          btn.classList.add("active");
-          recalcPrice();
         });
-      });
+      }
 
       // Addon select: recalc on change, scoped to this card
       select.addEventListener("change", function(){
@@ -802,13 +815,13 @@
       // Add to cart
       addBtn.addEventListener("click", function(){
         var volBtn = currentVolBtn();
-        var ml = volBtn ? volBtn.textContent.replace(" мл","").trim() : drink.volumes[0].ml;
+        var sizeLabel = volBtn ? volBtn.textContent.trim() : (drink.volumes[0].label || (drink.volumes[0].ml + " мл"));
         var addon = currentAddon();
         var total = recalcPrice();
 
         var itemName = drink.name + (addon.id ? " (" + addon.label.replace(/\s*\(\+5k\)/,"") + ")" : "");
-        var size = ml + " мл";
-        var key = cardId + "|" + ml + "|" + addon.id;
+        var size = sizeLabel;
+        var key = cardId + "|" + sizeLabel + "|" + addon.id;
 
         var existing = cart.filter(function(i){ return i.key === key; })[0];
         if (existing){
