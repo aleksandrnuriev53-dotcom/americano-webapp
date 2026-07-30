@@ -110,6 +110,18 @@
   }
   .loyalty-note b{color:var(--gold);font-weight:700;}
 
+  .free-drink-badge{
+    margin: 0 0 18px;
+    padding: 12px 16px;
+    border-radius: 14px;
+    background: linear-gradient(155deg, var(--gold) 0%, var(--gold-deep) 100%);
+    color: #1c1713;
+    font-weight: 700;
+    font-size: 13.5px;
+    text-align: center;
+    box-shadow: 0 6px 16px rgba(201,148,86,0.35);
+  }
+
   /* CATEGORY GRID */
   .section-label{
     font-size:11px;text-transform:uppercase;letter-spacing:0.12em;
@@ -337,6 +349,8 @@
     <div class="stamps" id="stampsRow"></div>
     <div class="loyalty-note" id="loyaltyNote"></div>
   </div>
+
+  <div class="free-drink-badge" id="freeDrinkBadge" style="display:none;"></div>
 
   <!-- CATEGORIES VIEW -->
   <div class="view active" id="viewCategories">
@@ -607,8 +621,9 @@
 
   function getUrlFree(){
     var params = new URLSearchParams(window.location.search);
-    var raw = params.get("free");
-    return raw === "1" || raw === "true";
+    var raw = parseInt(params.get("free"), 10);
+    if (isNaN(raw) || raw < 0) raw = 0;
+    return raw;
   }
 
   /* =========================================================
@@ -622,8 +637,9 @@
   }
 
   function renderLoyalty(){
-    var freeDrink = getUrlFree();
-    var stamps = freeDrink ? 6 : getUrlStamps();
+    var stamps = getUrlStamps();
+    var freeDrinks = getUrlFree();
+
     var row = document.getElementById("stampsRow");
     row.innerHTML = "";
     for (var i = 0; i < 6; i++){
@@ -633,12 +649,25 @@
       row.appendChild(el);
     }
     document.getElementById("loyaltyCount").innerHTML = stamps + "<span>/6</span>";
+
     var note = document.getElementById("loyaltyNote");
-    if (freeDrink || stamps >= 6){
-      note.innerHTML = "<b>Поздравляем!</b> У вас есть бесплатный напиток — покажите карту бариста.";
+    if (stamps >= 6){
+      note.innerHTML = "<b>Поздравляем!</b> Ещё один штамп — и будет бесплатный напиток 🎉";
     } else {
       var left = 6 - stamps;
       note.innerHTML = "Ещё <b>" + left + "</b> " + pluralDrinks(left) + " до бесплатного угощения ✨";
+    }
+
+    var badge = document.getElementById("freeDrinkBadge");
+    if (badge){
+      if (freeDrinks > 0){
+        badge.style.display = "block";
+        badge.textContent = freeDrinks > 1
+          ? "🎉 У вас " + freeDrinks + " бесплатных напитка(ов)!"
+          : "🎉 У вас есть бесплатный напиток!";
+      } else {
+        badge.style.display = "none";
+      }
     }
   }
 
