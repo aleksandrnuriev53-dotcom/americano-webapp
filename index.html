@@ -265,7 +265,102 @@
     color:var(--gold);
     font-weight:700;
   }
-  .addon-trigger:focus-visible, .vol-btn:focus-visible, .back-btn:focus-visible, .cat-card:focus-visible, .add-btn:focus-visible{
+  .branch-overlay{
+    position:fixed;inset:0;
+    background:rgba(5,4,3,0.72);
+    -webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);
+    display:flex;align-items:flex-end;justify-content:center;
+    z-index:200;
+    opacity:0;pointer-events:none;
+    transition:opacity .2s ease;
+  }
+  .branch-overlay.open{ opacity:1;pointer-events:auto; }
+  .branch-sheet{
+    width:100%;max-width:480px;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-bottom:none;
+    border-radius:24px 24px 0 0;
+    box-shadow:var(--shadow);
+    padding:22px 18px calc(18px + env(safe-area-inset-bottom));
+    transform:translateY(100%);
+    transition:transform .28s cubic-bezier(.32,.72,0,1);
+  }
+  .branch-overlay.open .branch-sheet{ transform:translateY(0); }
+  .branch-handle{
+    width:36px;height:4px;border-radius:3px;
+    background:var(--line);
+    margin:0 auto 16px;
+  }
+  .branch-title{
+    font-size:16px;font-weight:700;color:var(--text);
+    margin-bottom:4px;
+  }
+  .branch-subtitle{
+    font-size:12.5px;color:var(--text-muted);
+    margin-bottom:16px;
+  }
+  .branch-list{ display:flex;flex-direction:column;gap:10px; }
+  .branch-option{
+    display:flex;align-items:center;gap:12px;
+    padding:14px 14px;
+    border-radius:14px;
+    border:1px solid var(--line);
+    background:var(--surface-2);
+    cursor:pointer;
+    transition:border-color .15s ease, background .15s ease, transform .1s ease;
+  }
+  .branch-option:active{ transform:scale(0.98); }
+  .branch-option.selected{
+    border-color:var(--gold);
+    background:var(--gold-soft);
+  }
+  .branch-pin{
+    flex:0 0 auto;
+    width:36px;height:36px;border-radius:50%;
+    background:var(--surface-3);
+    border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    font-size:16px;
+  }
+  .branch-option.selected .branch-pin{
+    border-color:var(--gold);
+  }
+  .branch-info{ flex:1;min-width:0; }
+  .branch-name{ font-size:14px;font-weight:600;color:var(--text); }
+  .branch-sub{ font-size:12px;color:var(--text-muted);margin-top:2px; }
+  .branch-check{
+    flex:0 0 auto;width:20px;height:20px;border-radius:50%;
+    border:1.5px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .branch-option.selected .branch-check{
+    border-color:var(--gold);background:var(--gold);
+  }
+  .branch-check svg{ width:11px;height:11px;opacity:0; }
+  .branch-option.selected .branch-check svg{ opacity:1; }
+  .branch-confirm{
+    width:100%;margin-top:18px;
+    background:var(--gold);
+    color:#1c1713;
+    border:none;border-radius:14px;
+    padding:14px;
+    font-size:14px;font-weight:700;
+    cursor:pointer;
+    opacity:0.4;pointer-events:none;
+    transition:opacity .15s ease;
+  }
+  .branch-confirm.ready{ opacity:1;pointer-events:auto; }
+  .branch-cancel{
+    width:100%;margin-top:8px;
+    background:transparent;
+    color:var(--text-muted);
+    border:none;
+    padding:10px;
+    font-size:13px;
+    cursor:pointer;
+  }
+  .addon-trigger:focus-visible, .vol-btn:focus-visible, .back-btn:focus-visible, .cat-card:focus-visible, .add-btn:focus-visible, .branch-option:focus-visible, .branch-confirm:focus-visible{
     outline:2px solid var(--gold); outline-offset:2px;
   }
 
@@ -410,9 +505,20 @@
 <div class="toast" id="toast"></div>
 
 <div class="cart-bar" id="cartBar">
-  <div class="cart-bar-inner" id="cartBarInner" onclick="sendOrder()">
+  <div class="cart-bar-inner" id="cartBarInner" onclick="requestOrder()">
     <span id="cartBarText">Заказать (0) • 0 сум</span>
     <span>→</span>
+  </div>
+</div>
+
+<div class="branch-overlay" id="branchOverlay">
+  <div class="branch-sheet">
+    <div class="branch-handle"></div>
+    <div class="branch-title">Выберите филиал</div>
+    <div class="branch-subtitle">Откуда хотите заказать:</div>
+    <div class="branch-list" id="branchList"></div>
+    <button class="branch-confirm" id="branchConfirm" type="button" onclick="confirmBranch()">Подтвердить заказ</button>
+    <button class="branch-cancel" type="button" onclick="closeBranchModal()">Отмена</button>
   </div>
 </div>
 
@@ -1004,8 +1110,8 @@
       } else {
         tg.MainButton.hide();
       }
-      tg.MainButton.offClick(sendOrder);
-      tg.MainButton.onClick(sendOrder);
+      tg.MainButton.offClick(requestOrder);
+      tg.MainButton.onClick(requestOrder);
     }
 
     // Fallback bottom bar for browsers without Telegram WebApp
@@ -1019,12 +1125,13 @@
     }
   }
 
-  function sendOrder(){
+  function sendOrder(branch){
     var totals = cartTotals();
     if (totals.count === 0) return;
 
     var payload = {
       type: "order",
+      branch: branch,
       cart: cart.map(function(i){
         return { name: i.name, size: i.size, price: i.price, qty: i.qty };
       }),
@@ -1034,11 +1141,108 @@
     if (tg && tg.sendData){
       tg.sendData(JSON.stringify(payload));
     } else {
-      showToast("Заказ отправлен (демо-режим)");
+      showToast("Заказ отправлен (демо-режим): " + branch);
       console.log("order payload", payload);
     }
   }
   window.sendOrder = sendOrder;
+
+  /* =========================================================
+     BRANCH SELECTION MODAL
+  ========================================================= */
+  var BRANCHES = [
+    { name: "Мирсаид Барака 2", sub: "Корзинка" },
+    { name: "Абдурахмана Джами 96", sub: "Ёшлар маркази" },
+    { name: "Буюк Ипак Йули 1", sub: "Микрорайон" }
+  ];
+  var selectedBranch = null;
+
+  var branchOverlay = document.getElementById("branchOverlay");
+  var branchList = document.getElementById("branchList");
+  var branchConfirmBtn = document.getElementById("branchConfirm");
+
+  BRANCHES.forEach(function(b){
+    var opt = document.createElement("div");
+    opt.className = "branch-option";
+
+    var pin = document.createElement("div");
+    pin.className = "branch-pin";
+    pin.textContent = "📍";
+
+    var info = document.createElement("div");
+    info.className = "branch-info";
+    var name = document.createElement("div");
+    name.className = "branch-name";
+    name.textContent = b.name;
+    var sub = document.createElement("div");
+    sub.className = "branch-sub";
+    sub.textContent = b.sub;
+    info.appendChild(name);
+    info.appendChild(sub);
+
+    var check = document.createElement("div");
+    check.className = "branch-check";
+    var checkSvg = document.createElementNS("http://www.w3.org/2000/svg","svg");
+    checkSvg.setAttribute("viewBox","0 0 12 10");
+    checkSvg.setAttribute("fill","none");
+    var checkPath = document.createElementNS("http://www.w3.org/2000/svg","path");
+    checkPath.setAttribute("d","M1 5L4.5 8.5L11 1.5");
+    checkPath.setAttribute("stroke","#1c1713");
+    checkPath.setAttribute("stroke-width","1.8");
+    checkPath.setAttribute("stroke-linecap","round");
+    checkPath.setAttribute("stroke-linejoin","round");
+    checkSvg.appendChild(checkPath);
+    check.appendChild(checkSvg);
+
+    opt.appendChild(pin);
+    opt.appendChild(info);
+    opt.appendChild(check);
+
+    opt.addEventListener("click", function(){
+      branchList.querySelectorAll(".branch-option").forEach(function(o){
+        o.classList.remove("selected");
+      });
+      opt.classList.add("selected");
+      selectedBranch = b.name + " (" + b.sub + ")";
+      branchConfirmBtn.classList.add("ready");
+    });
+
+    branchList.appendChild(opt);
+  });
+
+  function openBranchModal(){
+    selectedBranch = null;
+    branchConfirmBtn.classList.remove("ready");
+    branchList.querySelectorAll(".branch-option").forEach(function(o){
+      o.classList.remove("selected");
+    });
+    branchOverlay.classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeBranchModal(){
+    branchOverlay.classList.remove("open");
+    document.body.style.overflow = "";
+  }
+  window.closeBranchModal = closeBranchModal;
+
+  branchOverlay.addEventListener("click", function(e){
+    if (e.target === branchOverlay) closeBranchModal();
+  });
+
+  function requestOrder(){
+    var totals = cartTotals();
+    if (totals.count === 0) return;
+    openBranchModal();
+  }
+  window.requestOrder = requestOrder;
+
+  function confirmBranch(){
+    if (!selectedBranch) return;
+    closeBranchModal();
+    sendOrder(selectedBranch);
+  }
+  window.confirmBranch = confirmBranch;
 
   /* =========================================================
      INIT
@@ -1058,4 +1262,3 @@
 </script>
 </body>
 </html>
- 
