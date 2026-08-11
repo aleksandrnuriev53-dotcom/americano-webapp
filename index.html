@@ -87,13 +87,13 @@
   .loyalty-count{font-family:'Fraunces',serif;font-size:26px;color:var(--gold);font-weight:600;text-align:right;}
   .loyalty-count span{font-size:13px;color:var(--text-muted);font-family:'Manrope',sans-serif;}
 
-  .stamps{display:flex;gap:9px;margin-top:16px;position:relative;z-index:1;}
+  .stamps{display:flex;gap:7px;margin-top:16px;position:relative;z-index:1;}
   .stamp{
     flex:1;
     aspect-ratio:1/1;
     border-radius:50%;
     display:flex;align-items:center;justify-content:center;
-    font-size:16px;
+    font-size:14px;
     border:1.5px dashed rgba(230,184,125,0.35);
     background:rgba(255,255,255,0.02);
     color:transparent;
@@ -750,7 +750,7 @@
     var raw = parseInt(params.get("stamps"), 10);
     if (isNaN(raw)) raw = 0;
     if (raw < 0) raw = 0;
-    if (raw > 6) raw = 6;
+    if (raw > 7) raw = 7;
     return raw;
   }
 
@@ -772,21 +772,21 @@
 
   function renderLoyalty(){
     var freeDrink = getUrlFree();
-    var stamps = freeDrink ? 6 : getUrlStamps();
+    var stamps = freeDrink ? 7 : getUrlStamps();
     var row = document.getElementById("stampsRow");
     row.innerHTML = "";
-    for (var i = 0; i < 6; i++){
+    for (var i = 0; i < 7; i++){
       var el = document.createElement("div");
       el.className = "stamp" + (i < stamps ? " filled" : "");
       el.textContent = "☕";
       row.appendChild(el);
     }
-    document.getElementById("loyaltyCount").innerHTML = stamps + "<span>/6</span>";
+    document.getElementById("loyaltyCount").innerHTML = stamps + "<span>/7</span>";
     var note = document.getElementById("loyaltyNote");
-    if (freeDrink || stamps >= 6){
-      note.innerHTML = "<b>Поздравляем!</b> У вас есть бесплатный напиток — покажите карту бариста.";
+    if (freeDrink || stamps >= 7){
+      note.innerHTML = "<b>У вас есть бесплатный напиток!</b> 🎁 Покажите карту бариста.";
     } else {
-      var left = 6 - stamps;
+      var left = 7 - stamps;
       note.innerHTML = "Ещё <b>" + left + "</b> " + pluralDrinks(left) + " до бесплатного угощения ✨";
     }
   }
