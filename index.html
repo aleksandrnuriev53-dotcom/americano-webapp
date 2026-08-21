@@ -143,6 +143,14 @@
     position:absolute;inset:0;width:100%;height:100%;
     object-fit:cover;
   }
+  .cat-media img.cat-media-bg{
+    filter:blur(14px) brightness(0.55) saturate(1.15);
+    transform:scale(1.25);
+  }
+  .cat-media img.cat-media-fg{
+    object-fit:contain;
+    z-index:1;
+  }
   .cat-media-overlay{
     position:absolute;inset:0;
     background:linear-gradient(180deg, rgba(15,12,10,0) 38%, rgba(28,23,19,0.92) 100%);
@@ -479,7 +487,7 @@
         <div class="loyalty-title">Карта лояльности</div>
         <div class="loyalty-sub" id="loyaltySub">Собирайте штампы за каждый напиток</div>
       </div>
-      <div class="loyalty-count" id="loyaltyCount">0<span>/6</span></div>
+      <div class="loyalty-count" id="loyaltyCount">0<span>/7</span></div>
     </div>
     <div class="stamps" id="stampsRow"></div>
     <div class="loyalty-note" id="loyaltyNote"></div>
@@ -756,8 +764,9 @@
 
   function getUrlFree(){
     var params = new URLSearchParams(window.location.search);
-    var raw = params.get("free");
-    return raw === "1" || raw === "true";
+    var raw = parseInt(params.get("free"), 10);
+    if (isNaN(raw) || raw < 0) raw = 0;
+    return raw;
   }
 
   /* =========================================================
@@ -771,9 +780,15 @@
   }
 
   function renderLoyalty(){
-    var freeDrink = getUrlFree();
-    var stamps = freeDrink ? 7 : getUrlStamps();
     var row = document.getElementById("stampsRow");
+    var countEl = document.getElementById("loyaltyCount");
+    var note = document.getElementById("loyaltyNote");
+    if (!row || !countEl || !note) return; // защита: если разметка карты недоступна, просто не рисуем её
+
+    var freeCount = getUrlFree();       // сколько бесплатных напитков накоплено (0, 1, 2...)
+    var hasFree = freeCount > 0;
+    var stamps = hasFree ? 7 : getUrlStamps(); // пока есть неполученный подарок — карта показана заполненной
+
     row.innerHTML = "";
     for (var i = 0; i < 7; i++){
       var el = document.createElement("div");
@@ -781,9 +796,12 @@
       el.textContent = "☕";
       row.appendChild(el);
     }
-    document.getElementById("loyaltyCount").innerHTML = stamps + "<span>/7</span>";
-    var note = document.getElementById("loyaltyNote");
-    if (freeDrink || stamps >= 7){
+    countEl.innerHTML = stamps + "<span>/7</span>";
+
+    if (hasFree){
+      var giftWord = freeCount === 1 ? "бесплатный напиток" : "бесплатных напитка";
+      note.innerHTML = "<b>У вас есть " + freeCount + " " + giftWord + "!</b> 🎁 Покажите карту бариста.";
+    } else if (stamps >= 7){
       note.innerHTML = "<b>У вас есть бесплатный напиток!</b> 🎁 Покажите карту бариста.";
     } else {
       var left = 7 - stamps;
@@ -1224,9 +1242,13 @@
   /* =========================================================
      INIT
   ========================================================= */
-  renderLoyalty();
-  renderCategories();
-  updateCartUI();
+  // Каждый блок инициализации изолирован: если один из них упадёт с
+  // ошибкой (например, из-за неожиданных query-параметров карты
+  // лояльности), это не должно "заморозить" всё приложение — меню и
+  // корзина обязаны остаться рабочими в любом случае.
+  try { renderLoyalty(); } catch (e) { console.error("renderLoyalty failed:", e); }
+  try { renderCategories(); } catch (e) { console.error("renderCategories failed:", e); }
+  try { updateCartUI(); } catch (e) { console.error("updateCartUI failed:", e); }
 
   if (tg){
     try {
