@@ -785,9 +785,9 @@
     var note = document.getElementById("loyaltyNote");
     if (!row || !countEl || !note) return; // защита: если разметка карты недоступна, просто не рисуем её
 
-    var freeCount = getUrlFree();       // сколько бесплатных напитков накоплено (0, 1, 2...)
+    var freeCount = getUrlFree();  // сколько бесплатных напитков накоплено (0, 1, 2...)
     var hasFree = freeCount > 0;
-    var stamps = hasFree ? 7 : getUrlStamps(); // пока есть неполученный подарок — карта показана заполненной
+    var stamps = getUrlStamps();   // реальный прогресс текущего круга — не форсируем "полную" карту
 
     row.innerHTML = "";
     for (var i = 0; i < 7; i++){
@@ -798,15 +798,19 @@
     }
     countEl.innerHTML = stamps + "<span>/7</span>";
 
+    var noteHtml = "";
     if (hasFree){
       var giftWord = freeCount === 1 ? "бесплатный напиток" : "бесплатных напитка";
-      note.innerHTML = "<b>У вас есть " + freeCount + " " + giftWord + "!</b> 🎁 Покажите карту бариста.";
-    } else if (stamps >= 7){
-      note.innerHTML = "<b>У вас есть бесплатный напиток!</b> 🎁 Покажите карту бариста.";
+      noteHtml += "<b>У вас есть " + freeCount + " " + giftWord + "!</b> 🎁 Покажите карту бариста.";
+    }
+    if (stamps >= 7){
+      noteHtml += (noteHtml ? "<br>" : "") + "<b>Карта заполнена!</b> 🎉 Ещё один бесплатный напиток уже ждёт вас.";
     } else {
       var left = 7 - stamps;
-      note.innerHTML = "Ещё <b>" + left + "</b> " + pluralDrinks(left) + " до бесплатного угощения ✨";
+      var progressLine = "Ещё <b>" + left + "</b> " + pluralDrinks(left) + " до бесплатного угощения ✨";
+      noteHtml += (noteHtml ? "<br>" : "") + progressLine;
     }
+    note.innerHTML = noteHtml;
   }
 
   /* =========================================================
